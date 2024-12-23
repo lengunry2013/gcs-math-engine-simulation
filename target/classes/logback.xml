@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+
+    <contextName>math-engine</contextName>
+    <property name="log.path" value="./engineLogs/logs"/>
+    <property name="server.name" value="math-engine"/>
+    <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+    <property name="log.file" value="${log.path}/${server.name}.%d{yyyyMMdd}.%i.log.gz"/>
+
+    <!-- console output -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--log file output file-->
+            <FileNamePattern>${log.file}</FileNamePattern>
+            <!--Log file retention days-->
+            <MaxHistory>30</MaxHistory>
+
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+
+        <ImmediateFlush>true</ImmediateFlush>
+    </appender>
+
+    <appender name="asyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <!--default 256-->
+        <queueSize>5000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+        <appender-ref ref="fileAppender"/>
+    </appender>
+
+    <!--<logger name="com.feng" level="INFO"></logger>-->
+
+    <!-- log level -->
+    <root level="OFF">
+        <appender-ref ref="asyncFileAppender"/>
+        <appender-ref ref="console"/>
+    </root>
+</configuration>

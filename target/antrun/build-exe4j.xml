@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="exe4j">
+  <target name="exe4j">
+    <path id="exe4j.path">
+      <pathelement path="E:\Program Files\exe4j/bin/ant.jar" />
+    </path>
+    <taskdef classname="com.exe4j.Exe4JTask" name="exe4j">
+      <classpath refid="exe4j.path" />
+    </taskdef>
+    <exe4j projectfile="MathSimulation.exe4j" />
+    <exe4j projectfile="MathSimulationW.exe4j" />
+  </target>
+</project>

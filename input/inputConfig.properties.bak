@@ -1,0 +1,44 @@
+model=GCBJ00101
+#model=8140802
+payback=9550
+#payback=9651
+denom=100
+groupCode=
+gameClass=TableGame_BlackJack
+initCredit=10000000000
+simulationCount=1000000
+playTimesPerPlayer=10000
+outputType=1
+outputPath=simulationData
+maxOutputFileSize=10240000
+#BlackJack Game
+handCount=5
+betInfos=[{handIndex: 1,bet: 100,jackpotBet: 10},{handIndex: 2,bet: 100,jackpotBet: 10},{handIndex: 3,bet: 100,jackpotBet: 10},{handIndex: 4,bet: 100,jackpotBet: 10},{handIndex: 5,bet: 100,jackpotBet: 10}]
+jackpotPay=1000000,100000,10000,0
+jackpotWeight=1, 10, 100, 33000
+
+#slot Game
+#gameClass=Slots
+lines=15
+bet=30
+choiceFsOrBonusIndex=-1
+MaxWin=0,1,2,3,4,5,10,20,30,40,50,60,70,80,90,100,200,300,400,500,600,700,800,900,1000
+highSymbol=1,12
+nearMissSymbol=2,3,4,5,6,7,8,9,10,11
+wildSymbol=1
+hasWinTierFsPay=1
+fsType=1
+fsExpRtp=35.116
+fsMeterTimes=
+hasWinTierBonusPay=0
+bonusType=0
+bonusExpRtp=
+scatterSymbol=
+hasStatisticsHorSymbol=
+scatterCount=
+playGameCount=1
+playChooseSpecialSymbol=2
+achievementPay=
+achievementSymbol=
+maxFileAchievementPayIndex=500000
+
