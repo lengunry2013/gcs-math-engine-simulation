@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20240319_V1.0";
+    private static String simulation_version_info = "20241223_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
