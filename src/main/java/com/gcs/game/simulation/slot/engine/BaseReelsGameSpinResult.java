@@ -248,13 +248,22 @@ public class BaseReelsGameSpinResult {
                 resultInfo.setTotalAmount(totalWon);
                 initCredit += totalWon;
                 resultInfo.setLeftCredit(initCredit);
+                //Total Win
                 if (resultInfo.getPayWeightMap().containsKey(totalWon)) {
                     long value = resultInfo.getPayWeightMap().get(totalWon) + 1;
                     resultInfo.getPayWeightMap().put(totalWon, value);
                 } else {
                     resultInfo.getPayWeightMap().put(totalWon, 1L);
                 }
+                //BaseGame Win
+                if (resultInfo.getBasePayWeightMap().containsKey(baseCoinOut)) {
+                    long value = resultInfo.getPayWeightMap().get(baseCoinOut) + 1;
+                    resultInfo.getBasePayWeightMap().put(baseCoinOut, value);
+                } else {
+                    resultInfo.getBasePayWeightMap().put(baseCoinOut, 1L);
+                }
                 computeStdDev(slotConfigInfo, resultInfo, totalWon, totalBet);
+                computeBaseStdDev(slotConfigInfo, resultInfo, baseCoinOut, totalBet);
                 if (!isAchievement) {
                     tiersInfo.setTotalWon(totalWon);
                     tiersInfo.setTotalBet(totalBet);
@@ -299,6 +308,14 @@ public class BaseReelsGameSpinResult {
         } catch (Exception e) {
             log.error("cycleSpinForBaseReelsGame run exception", e);
         }
+    }
+
+    private void computeBaseStdDev(SlotConfigInfo slotConfigInfo, BaseResultInfo resultInfo, long baseCoinOut, long totalBet) {
+        //compute Base Deviation
+        double basePayBack = baseCoinOut * 1.0 / totalBet;
+        double expPayBack = slotConfigInfo.getBaseExpRtp() * 1.0 / 100;
+        double deviation = Math.pow((basePayBack - expPayBack), 2);
+        resultInfo.setBaseStdDeviation(resultInfo.getBaseStdDeviation() + deviation);
     }
 
     private long computeScatterWin(SlotSpinResult baseSpinResult, BaseSlotModel model) {
@@ -645,6 +662,10 @@ public class BaseReelsGameSpinResult {
                         strbHeader.append("Bonus").append(i + 1).append(" RTP StdDev").append(BaseConstant.TAB_STR);
                     }
                 }
+                strbHeader.append("Base Total Hit").append(BaseConstant.TAB_STR);
+                strbHeader.append("Base Total Win").append(BaseConstant.TAB_STR);
+                strbHeader.append("Base Win Standard Deviation").append(BaseConstant.TAB_STR);
+                strbHeader.append("Base RTP Standard Deviation").append(BaseConstant.TAB_STR);
             }
             FileWriteUtil.writeFileHeadInfo(configInfo.getOutputFileName(), strbHeader.toString());
         }
@@ -762,11 +783,24 @@ public class BaseReelsGameSpinResult {
                     }
                     double bonusWinStdDev = Math.sqrt(bonusVarWin / bonusTotalEntries);
                     strContent.append(bonusWinStdDev).append(BaseConstant.TAB_STR);
-                    double bonusStdDev = Math.sqrt(resultInfo.getFsStdDeviation()[i] / bonusTotalEntries);
+                    double bonusStdDev = Math.sqrt(resultInfo.getBonusStdDeviation()[i] / bonusTotalEntries);
                     strContent.append(bonusStdDev).append(BaseConstant.TAB_STR);
                 }
             }
-
+            //compute Base win std dev
+            strContent.append(resultInfo.getTotalHit()).append(BaseConstant.TAB_STR);
+            strContent.append(resultInfo.getBaseGameTotalWin()).append(BaseConstant.TAB_STR);
+            double baseAverageWin = resultInfo.getBaseGameTotalWin() * 1.0 / resultInfo.getSpinCount();
+            double baseVarWin = 0.0;
+            for (Map.Entry<Long, Long> entry : resultInfo.getBasePayWeightMap().entrySet()) {
+                long pay = entry.getKey();
+                long weight = entry.getValue();
+                baseVarWin += weight * Math.pow((pay - baseAverageWin), 2);
+            }
+            double baseWinStdDev = Math.sqrt(baseVarWin / resultInfo.getSpinCount());
+            strContent.append(baseWinStdDev).append(BaseConstant.TAB_STR);
+            double baseStdDev = Math.sqrt(resultInfo.getBaseStdDeviation() / resultInfo.getSpinCount());
+            strContent.append(baseStdDev).append(BaseConstant.TAB_STR);
         }
         FileWriteUtil.outputPrint(strContent.toString(), configInfo.getOutputFileName(), configInfo, 0);
     }
@@ -953,6 +987,7 @@ public class BaseReelsGameSpinResult {
     }
 
     private void computeStdDev(SlotConfigInfo configInfo, BaseResultInfo resultInfo, long totalWon, long totalBet) {
+        //compute Total deviation
         double payBack = totalWon * 1.0 / totalBet;
         double expPayBack = configInfo.getPayback() / 10000;
         double deviation = Math.pow((payBack - expPayBack), 2);

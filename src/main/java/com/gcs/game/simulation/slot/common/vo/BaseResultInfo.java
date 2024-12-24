@@ -82,7 +82,7 @@ public class BaseResultInfo {
 
     private double[] bonusStdDeviation = null;
 
-    private List<Map<Long, Long>> basePayWeightMapList = null;
+    private Map<Long, Long> basePayWeightMap = new ConcurrentHashMap<>();
     private List<Map<Long, Long>> fsPayWeightMapList = null;
 
     private List<Map<Long, Long>> bonusPayWeightMapList = null;

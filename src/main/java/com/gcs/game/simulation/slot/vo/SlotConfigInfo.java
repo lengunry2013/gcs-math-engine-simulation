@@ -32,6 +32,8 @@ public class SlotConfigInfo extends BaseConfigInfo {
 
     private int wildSymbol = 1;
 
+    private double baseExpRtp = 0.0;
+
     private boolean isFsPay = true;
 
     private boolean isBonusPay = true;
