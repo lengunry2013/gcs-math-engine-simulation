@@ -52,6 +52,7 @@ public class InputConfigReader {
     private static final String NEAR_MISS_SYMBOL_KEY = "nearMissSymbol";
     private static final String WILD_SYMBOL_KEY = "wildSymbol";
     private static final String HAS_WIN_TIER_FS_PAY_KEY = "hasWinTierFsPay";
+    private static final String BASE_EXP_RTP_KEY = "baseExpRtp";
     private static final String FS_TYPE_KEY = "fsType";
     private static final String FS_EXP_RTP_KEY = "fsExpRtp";
     private static final String FS_METER_TIMES_KEY = "fsMeterTimes";
@@ -133,6 +134,17 @@ public class InputConfigReader {
         }
     }
 
+    private double getDoubleValue(String key) {
+        try {
+            String property = PROPERTIES.getProperty(key).trim();
+            double value = Double.valueOf(property);
+            return value;
+        } catch (Exception e) {
+            log.error("load properties getIntValue() error", FILE_NAME, e);
+            return 0.0;
+        }
+    }
+
     private long getLongValue(String key) {
         try {
             String property = PROPERTIES.getProperty(key).trim();
@@ -182,6 +194,7 @@ public class InputConfigReader {
             int[] missSymbol = StringUtil.changeStrToArray(getStringValue(NEAR_MISS_SYMBOL_KEY), ",");
             int wildSymbol = getIntValue(WILD_SYMBOL_KEY);
             boolean hasWinTierFsPay = getIntValue(HAS_WIN_TIER_FS_PAY_KEY) == 1 ? true : false;
+            double baseExpRtp = getDoubleValue(BASE_EXP_RTP_KEY);
             int fsType = getIntValue(FS_TYPE_KEY);
             double[] fsExpRtp = StringUtil.changeStrToDoubleArray(getStringValue(FS_EXP_RTP_KEY), ",");
             int fsMeterTimes = getIntValue(FS_METER_TIMES_KEY);
@@ -209,6 +222,7 @@ public class InputConfigReader {
             ((SlotConfigInfo) configInfo).setHighSymbol(highSymbol);
             ((SlotConfigInfo) configInfo).setMissSymbol(missSymbol);
             ((SlotConfigInfo) configInfo).setWildSymbol(wildSymbol);
+            ((SlotConfigInfo) configInfo).setBaseExpRtp(baseExpRtp);
             ((SlotConfigInfo) configInfo).setFsPay(hasWinTierFsPay);
             ((SlotConfigInfo) configInfo).setFsType(fsType);
             ((SlotConfigInfo) configInfo).setFsRtp(fsExpRtp);
