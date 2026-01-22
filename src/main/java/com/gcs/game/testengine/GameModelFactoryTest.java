@@ -3,6 +3,8 @@ package com.gcs.game.testengine;
 import com.gcs.game.engine.GameModelFactory;
 import com.gcs.game.engine.blackJack.model.BaseBlackJackModel;
 import com.gcs.game.engine.keno.model.BaseKenoModel;
+import com.gcs.game.engine.math.model20260201.Model20260201Bonus;
+import com.gcs.game.engine.math.model20260201.Model20260201FSBonus;
 import com.gcs.game.engine.math.model5070530.Model5070530;
 import com.gcs.game.engine.poker.bonus.PokerBonus;
 import com.gcs.game.engine.poker.model.BasePokerModel;
@@ -11,6 +13,9 @@ import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.testengine.math.model1010802.Model1010802Test;
 import com.gcs.game.testengine.math.model1260130.Model1260130BonusTest;
 import com.gcs.game.testengine.math.model1260130.Model1260130Test;
+import com.gcs.game.testengine.math.model20260201.Model20260201BonusTest;
+import com.gcs.game.testengine.math.model20260201.Model20260201FSBonusTest;
+import com.gcs.game.testengine.math.model20260201.Model20260201Test;
 import com.gcs.game.testengine.math.model5070530.Model5070530Test;
 import com.gcs.game.testengine.math.model6060630.Model6060630BonusTest;
 import com.gcs.game.testengine.math.model6060630.Model6060630Test;
@@ -63,6 +68,9 @@ public class GameModelFactoryTest extends GameModelFactory {
             case "1010802":
                 model = new Model1010802Test();
                 break;
+            case "20260201":
+                model = new Model20260201Test();
+                break;
             default:
                 break;
         }
@@ -74,6 +82,13 @@ public class GameModelFactoryTest extends GameModelFactory {
         switch (gameModel) {
             case "1260130":
                 model = new Model1260130BonusTest();
+                break;
+            case "20260201":
+                if ("bonus1".equalsIgnoreCase(bonusAsset)) {
+                    model = new Model20260201FSBonusTest();
+                } else if ("bonus2".equalsIgnoreCase(bonusAsset)) {
+                    model = new Model20260201BonusTest();
+                }
                 break;
             default:
                 break;

@@ -70,6 +70,7 @@ public class InputConfigReader {
     private static final String BASE_WEIGHT_KEY = "BaseWeight";
     private static final String BONUS_WEIGHT_KEY = "BonusWeight";
     private static final String FS_WEIGHT_KEY = "fsWeight";
+    private static final String FS_RANDOM_REELSET_KEY = "hasRandomFsReelsSet";
 
     //Poker
     private static final String GOLD_TRIGGER_WEIGHT_KEY = "GoldCardTriggerWeight";
@@ -212,6 +213,7 @@ public class InputConfigReader {
             int[][] baseWeight = JSON.parseObject(getStringValue(BASE_WEIGHT_KEY), int[][].class);
             int[][] bonusWeight = JSON.parseObject(getStringValue(BONUS_WEIGHT_KEY), int[][].class);
             int[][] fsWeight = JSON.parseObject(getStringValue(FS_WEIGHT_KEY), int[][].class);
+            int hasFsRandomReelsSet = getIntValue(FS_RANDOM_REELSET_KEY);
             long maxTotalPay = getLongValue(TOTAL_PAY_CAP_KEY);
             long[][] payTables = JSON.parseObject(getStringValue(PAY_TABLE_KEY), long[][].class);
             ((SlotConfigInfo) configInfo).setLines(lines);
@@ -243,7 +245,7 @@ public class InputConfigReader {
             ((SlotConfigInfo) configInfo).setFsWeight(fsWeight);
             ((SlotConfigInfo) configInfo).setTotalPayCap(maxTotalPay);
             ((SlotConfigInfo) configInfo).setPayTables(payTables);
-
+            ((SlotConfigInfo) configInfo).setHasRandomFsReelsSet(hasFsRandomReelsSet);
         } else if ("TableGame_Poker".equalsIgnoreCase(gameClass)) {
             configInfo = new PokerConfigInfo();
             long lines = getLongValue(LINES_KEY);

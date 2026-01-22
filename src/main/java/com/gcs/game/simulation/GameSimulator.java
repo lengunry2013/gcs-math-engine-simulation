@@ -6,6 +6,7 @@ import com.gcs.game.engine.blackJack.model.BaseBlackJackModel;
 import com.gcs.game.engine.keno.model.BaseKenoModel;
 import com.gcs.game.engine.math.model1010802.Model1010802Engine;
 import com.gcs.game.engine.math.model1260130.Model1260130Engine;
+import com.gcs.game.engine.math.model20260201.Model20260201Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -22,10 +23,7 @@ import com.gcs.game.simulation.keno.engine.KenoEngineResult;
 import com.gcs.game.simulation.keno.vo.KenoConfigInfo;
 import com.gcs.game.simulation.poker.engine.PokerEngineResult;
 import com.gcs.game.simulation.poker.vo.PokerConfigInfo;
-import com.gcs.game.simulation.slot.engine.BaseReelsGameSpinResult;
-import com.gcs.game.simulation.slot.engine.BaseReelsGameSymbolSpinResult;
-import com.gcs.game.simulation.slot.engine.EsqueletoExplosivoSpinResult;
-import com.gcs.game.simulation.slot.engine.LittleDragonBunsSpinResult;
+import com.gcs.game.simulation.slot.engine.*;
 import com.gcs.game.simulation.slot.vo.SlotConfigInfo;
 import com.gcs.game.simulation.util.BaseConstant;
 import com.gcs.game.simulation.util.FileWriteUtil;
@@ -39,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20241223_V1.0";
+    private static String simulation_version_info = "20250106_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -96,6 +94,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model1010802Engine) {
                                 EsqueletoExplosivoSpinResult spinResult = new EsqueletoExplosivoSpinResult();
                                 spinResult.cycleSpinForEsqueletoExplosivo(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260201Engine) {
+                                MissSpookySpinResult spinResult = new MissSpookySpinResult();
+                                spinResult.cycleSpinForMissSpooky(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {
@@ -116,7 +117,7 @@ public class GameSimulator {
                             BaseReelsGameSpinResult spinResult = new BaseReelsGameSpinResult();
                             spinResult.cycleSpinForBaseReelsGame(engine, gameLogicBean, configInfo, slotModel);
                         }
-                    }else if (outputInfoType == BaseConstant.BASE_SPIN_OUTPUT_TYPE) {
+                    } else if (outputInfoType == BaseConstant.BASE_SPIN_OUTPUT_TYPE) {
                         if ("Slots".equalsIgnoreCase(configInfo.getGameClass())) {
                             BaseSlotModel slotModel = GameModelFactoryTest.getInstance().getSlotsModel(mmID);
                             setSlotConfigWeight(configInfo, slotModel);
@@ -193,6 +194,7 @@ public class GameSimulator {
             configWeight.setDynamicPayTable(slotConfigInfo.getSymbolPayTable());
             configWeight.setTotalPayCap(slotConfigInfo.getTotalPayCap());
             configWeight.setDynamicPayTable(slotConfigInfo.getPayTables());
+            configWeight.setHasRandomFsReelsSet(slotConfigInfo.getHasRandomFsReelsSet());
             //configWeight.setContributionPercent(slotConfigInfo.getContributionPercent());
             //configWeight.setLevelDistribute(slotConfigInfo.getLevelDistribute());
             ((IConfigWeight) model).setConfigWeight(configWeight);

@@ -70,5 +70,6 @@ public class SlotConfigInfo extends BaseConfigInfo {
 
     private long totalPayCap = 0L;
     private long[][] payTables = null;
+    private int hasRandomFsReelsSet = 0;
 
 }

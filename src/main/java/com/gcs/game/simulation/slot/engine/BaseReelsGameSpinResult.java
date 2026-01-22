@@ -3,10 +3,7 @@ package com.gcs.game.simulation.slot.engine;
 import com.gcs.game.engine.IGameEngine;
 import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.engine.slots.utils.SlotEngineConstant;
-import com.gcs.game.engine.slots.vo.SlotBonusResult;
-import com.gcs.game.engine.slots.vo.SlotChoice2FsOrPickBonusResult;
-import com.gcs.game.engine.slots.vo.SlotGameLogicBean;
-import com.gcs.game.engine.slots.vo.SlotSpinResult;
+import com.gcs.game.engine.slots.vo.*;
 import com.gcs.game.exception.InvalidGameStateException;
 import com.gcs.game.simulation.slot.common.vo.AchievementPay;
 import com.gcs.game.simulation.slot.common.vo.AchievementSymbol;
@@ -215,6 +212,8 @@ public class BaseReelsGameSpinResult {
                                 if (baseBonusResult.getBonusPlayStatus() == 1000) {
                                     if (baseBonusResult instanceof SlotChoice2FsOrPickBonusResult) {
                                         fsType = ((SlotChoice2FsOrPickBonusResult) baseBonusResult).getFsType();
+                                    } else if (baseBonusResult instanceof SlotChoiceFSBonusResult) {
+                                        fsType = ((SlotChoiceFSBonusResult) baseBonusResult).getFsType();
                                     }
                                     /*else if (baseBonusResult instanceof BaseChoiceFSBonusResult) {
                                         fsType = ((BaseChoiceFSBonusResult) baseBonusResult).getFreespinType();

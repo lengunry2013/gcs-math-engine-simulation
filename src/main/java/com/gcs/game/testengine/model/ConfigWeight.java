@@ -13,6 +13,7 @@ public class ConfigWeight {
     //engine hit jackpot
     private double contributionPercent = 1.0;
     private int[] levelDistribute = null;
+    private int hasRandomFsReelsSet = 0;
 
     //pokers
     private int[] GoldCardTriggerWeight = null;

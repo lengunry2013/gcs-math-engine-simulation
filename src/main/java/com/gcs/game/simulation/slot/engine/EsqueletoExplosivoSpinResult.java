@@ -83,7 +83,7 @@ public class EsqueletoExplosivoSpinResult {
                     resultInfo.setBaseWildHit(resultInfo.getBaseWildHit() + 1);
                 }
                 int mulIndex = computeMulIndex(model.getBaseIncreaseMul(), baseSpinResult.getBaseGameMul());
-                if (winCredit > 0) {
+                if (winCredit > 0 || (baseSpinResult.getWildPositionsOnReel() != null && baseSpinResult.getWildPositionsOnReel().size() > 0)) {
                     resultInfo.getBaseReelsMulHit()[baseReelsType - 1][mulIndex]++;
                     resultInfo.getBaseReelsMulWin()[baseReelsType - 1][mulIndex] += winCredit;
                 }
@@ -124,6 +124,12 @@ public class EsqueletoExplosivoSpinResult {
                                 gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
 
                                 Model1010802SpinResult fsSpinResult = (Model1010802SpinResult) gameLogicBean.getSlotFsSpinResults().get(gameLogicBean.getSlotFsSpinResults().size() - 1);
+                                Model1010802SpinResult lastFsSpinResult = null;
+                                if (gameLogicBean.getSlotFsSpinResults().size() > 1) {
+                                    lastFsSpinResult = (Model1010802SpinResult) gameLogicBean.getSlotFsSpinResults().get(gameLogicBean.getSlotFsSpinResults().size() - 2);
+                                } else {
+                                    lastFsSpinResult = baseSpinResult;
+                                }
                                 long freespinWon = fsSpinResult.getSlotPay();
                                 resultInfo.setFsDisplaySymbols(fsSpinResult.getSlotDisplaySymbols());
                                 //baseGame random fs reels type
@@ -133,8 +139,10 @@ public class EsqueletoExplosivoSpinResult {
                                 if (fsSpinResult.getSpinType() == SlotEngineConstant.SPIN_TYPE_RESPIN_IN_BASE_GAME) {
                                     resultInfo.setBaseGameTotalWin(resultInfo.getBaseGameTotalWin() + freespinWon);
                                     resultInfo.getBaseReelsWin()[baseReelsType - 1] += freespinWon;
-                                    mulIndex = computeMulIndex(model.getBaseIncreaseMul(), fsSpinResult.getFsMul());
-                                    if (freespinWon > 0) {
+                                    //mulIndex = computeMulIndex(model.getBaseIncreaseMul(), fsSpinResult.getFsMul());
+                                    //System.out.println("respin next mul level=" + lastFsSpinResult.getRespinNextMulLevel());
+                                    mulIndex = lastFsSpinResult.getRespinNextMulLevel() - 1;
+                                    if (freespinWon > 0 || (fsSpinResult.getWildPositionsOnReel() != null && fsSpinResult.getWildPositionsOnReel().size() > 0)) {
                                         resultInfo.getBaseReelsMulHit()[baseReelsType - 1][mulIndex]++;
                                         resultInfo.getBaseReelsMulWin()[baseReelsType - 1][mulIndex] += freespinWon;
                                     }
@@ -156,7 +164,7 @@ public class EsqueletoExplosivoSpinResult {
                                     fsCoinOut += freespinWon;
                                     resultInfo.getBaseScatterWin()[baseReelsType - 1][scatterCount - 3] += freespinWon;
                                     mulIndex = computeMulIndex(model.getFsIncreaseMul(), fsSpinResult.getFsMul());
-                                    if (freespinWon > 0) {
+                                    if (freespinWon > 0 || (fsSpinResult.getWildPositionsOnReel() != null && fsSpinResult.getWildPositionsOnReel().size() > 0)) {
                                         resultInfo.getFsReelsMulHit()[fsReelsType - 1][mulIndex]++;
                                         resultInfo.getFsReelsMulWin()[fsReelsType - 1][mulIndex] += freespinWon;
                                     }
