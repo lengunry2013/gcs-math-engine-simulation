@@ -68,7 +68,7 @@ public class EsqueletoExplosivoSpinResult {
                 gameLogicMap.put("bet", slotConfigInfo.getBet());
                 gameLogicMap.put("denom", slotConfigInfo.getDenom());
 
-                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null);
+                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null, null);
                 long totalBet = gameLogicBean.getSumBetCredit();
                 initCredit -= totalBet;
 
@@ -121,7 +121,7 @@ public class EsqueletoExplosivoSpinResult {
                             while (gameLogicBean.getGamePlayStatus() == GameConstant.SLOT_GAME_STATUS_TRIGGER_FREESPIN) {
                                 PlayerInputInfo playerInput = new PlayerInputInfo();
                                 playerInput.setRequestGameStatus(200);
-                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
+                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null, null);
 
                                 Model1010802SpinResult fsSpinResult = (Model1010802SpinResult) gameLogicBean.getSlotFsSpinResults().get(gameLogicBean.getSlotFsSpinResults().size() - 1);
                                 Model1010802SpinResult lastFsSpinResult = null;

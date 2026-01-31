@@ -55,7 +55,7 @@ public class PokerEngineResult {
             gameLogicMap.put("lines", pokerConfigInfo.getLines());
             gameLogicMap.put("bet", pokerConfigInfo.getBet());
             gameLogicMap.put("denom", configInfo.getDenom());
-            pokerGameLogicBean = (PokerGameLogicBean) engine.gameStart(pokerGameLogicBean, gameLogicMap, null);
+            pokerGameLogicBean = (PokerGameLogicBean) engine.gameStart(pokerGameLogicBean, gameLogicMap, null, null);
             int gamePlayStatus = pokerGameLogicBean.getGamePlayStatus();
             Map<String, String> engineContextMap = engine.getEngineContext();
             pokerResult = pokerGameLogicBean.getPokerResult();
@@ -68,7 +68,7 @@ public class PokerEngineResult {
                 List<Integer> holdPositions = getHoldPositions(pokerResult, pokerModel);
                 //System.out.println("holdPositions=" + JSON.toJSONString(holdPositions));
                 gameLogicMap.put("holdPositions", holdPositions);
-                pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, null, engineContextMap, null);
+                pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, null, engineContextMap, null, null);
                 pokerResult = pokerGameLogicBean.getPokerResult();
                 winCredit = gameLogicBean.getSumWinCredit();
                 List<Integer> goldHandPokers = pokerResult.getGoldHandPokers();
@@ -130,7 +130,7 @@ public class PokerEngineResult {
                                 if (fsPokerResult.getPokerPlayStatus() == PokerGameConstant.POKER_STATUS_SWITCH_CARD) {
                                     List<Integer> holdPositions = getHoldPositions(fsPokerResult, pokerModel);
                                     gameLogicMap.put("holdPositions", holdPositions);
-                                    pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, engineContextMap, null);
+                                    pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, engineContextMap, null, null);
                                     long freespinWon = fsPokerResult.getPokerPay();
                                     int fsMul = fsPokerResult.getFsMul();
 
@@ -145,11 +145,11 @@ public class PokerEngineResult {
                                         }
                                     }
                                 } else {
-                                    pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, engineContextMap, null);
+                                    pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, engineContextMap, null, null);
                                     engineContextMap = engine.getEngineContext();
                                 }
                             } else {
-                                pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, engineContextMap, null);
+                                pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, engineContextMap, null, null);
                                 engineContextMap = engine.getEngineContext();
                             }
                         }
@@ -423,7 +423,7 @@ public class PokerEngineResult {
                 int[] picks = GameEngineCompute.initPokersArray(pick, cardList);
                 playerInput.setBonusPickInfos(picks);
             }
-            pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, null, null);
+            pokerGameLogicBean = (PokerGameLogicBean) engine.gameProgress(pokerGameLogicBean, gameLogicMap, playerInput, null, null, null);
 
             PokerBonusResult baseBonusResult = pokerGameLogicBean.getPokerBonusResult();
             if (baseBonusResult instanceof PokerROrBBonusResult) {

@@ -86,7 +86,7 @@ public class BaseReelsGameSymbolSpinResult extends LittleDragonBunsSpinResult {
                     }
                 }
                 //star baseGame spin
-                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null);
+                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null, null);
                 //special game
                 /*if ((model instanceof Model1220130Test && Model1220130Test.isFsRespin) ||
                         (model instanceof Model1220230Test && Model1220230Test.isFsRespin)) {
@@ -137,7 +137,7 @@ public class BaseReelsGameSymbolSpinResult extends LittleDragonBunsSpinResult {
                             while (gameLogicBean.getGamePlayStatus() == GameConstant.SLOT_GAME_STATUS_TRIGGER_FREESPIN) {
                                 PlayerInputInfo playerInput = new PlayerInputInfo();
                                 playerInput.setRequestGameStatus(200);
-                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
+                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null, null);
 
                                 SlotSpinResult fsSpinResult = null;
                                 long freespinWon = 0L;
@@ -190,7 +190,7 @@ public class BaseReelsGameSymbolSpinResult extends LittleDragonBunsSpinResult {
                                     int[] picks = GameEngineCompute.initArray(pick, bonusChoiceIndex);
                                     playerInput.setBonusPickInfos(picks);
                                 }
-                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
+                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null, null);
 
                                 SlotBonusResult baseBonusResult = gameLogicBean.getSlotBonusResult();
                                 if (baseBonusResult.getBonusPlayStatus() == 1000) {

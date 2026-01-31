@@ -53,7 +53,7 @@ public class KenoEngineResult {
             gameLogicMap.put("bet", kenoConfigInfo.getBet());
             gameLogicMap.put("denom", configInfo.getDenom());
             gameLogicMap.put("selectNumbers", selectNumbers);
-            kenoGameLogicBean = (KenoGameLogicBean) engine.gameStart(kenoGameLogicBean, gameLogicMap, null);
+            kenoGameLogicBean = (KenoGameLogicBean) engine.gameStart(kenoGameLogicBean, gameLogicMap, null, null);
             kenoResult = kenoGameLogicBean.getKenoResult();
             long totalBet = gameLogicBean.getSumBetCredit();
             initCredit -= totalBet;
@@ -121,7 +121,7 @@ public class KenoEngineResult {
                         while (kenoGameLogicBean.getGamePlayStatus() == GameConstant.KENO_GAME_STATUS_TRIGGER_FREESPIN) {
                             PlayerInputInfo playerInput = new PlayerInputInfo();
                             playerInput.setRequestGameStatus(200);
-                            kenoGameLogicBean = (KenoGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
+                            kenoGameLogicBean = (KenoGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null, null);
 
                             KenoResult fsKenoResult = ((KenoGameLogicBean) gameLogicBean).getKenoFsResult().get(kenoGameLogicBean.getKenoFsResult().size() - 1);
                             long freespinWon = fsKenoResult.getKenoPay();

@@ -84,7 +84,7 @@ public class BaseReelsGameSpinResult {
                 gameLogicMap.put("denom", slotConfigInfo.getDenom());
 
                 //star baseGame spin
-                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null);
+                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null, null);
                 long totalBet = gameLogicBean.getSumBetCredit();
                 initCredit -= totalBet;
 
@@ -146,7 +146,7 @@ public class BaseReelsGameSpinResult {
                             while (gameLogicBean.getGamePlayStatus() == GameConstant.SLOT_GAME_STATUS_TRIGGER_FREESPIN) {
                                 PlayerInputInfo playerInput = new PlayerInputInfo();
                                 playerInput.setRequestGameStatus(200);
-                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
+                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null, null);
 
                                 long freespinWon = 0L;
                                 SlotSpinResult fsSpinResult = null;
@@ -203,7 +203,7 @@ public class BaseReelsGameSpinResult {
                                     }*/
                                     playerInput.setBonusPickInfos(picks);
                                 }
-                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null);
+                                gameLogicBean = (SlotGameLogicBean) engine.gameProgress(gameLogicBean, gameLogicMap, playerInput, null, null, null);
 
                                 SlotBonusResult baseBonusResult = gameLogicBean.getSlotBonusResult();
                                 /*if (baseBonusResult instanceof BaseHighOrLowBonusResult) {

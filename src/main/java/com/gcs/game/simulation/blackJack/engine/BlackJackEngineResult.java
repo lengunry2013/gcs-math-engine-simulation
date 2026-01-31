@@ -61,7 +61,7 @@ public class BlackJackEngineResult {
             }
             gameLoginMap.put("blackJackBetInfos", betInfoList);
             //game-start
-            blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameStart(blackJackGameLogicBean, gameLoginMap, null);
+            blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameStart(blackJackGameLogicBean, gameLoginMap, null, null);
 
             List<BlackJackResult> blackJackResultList;
             if (blackJackGameLogicBean.getGamePlayStatus() == GameConstant.GAME_STATUS_COMPLETE) {
@@ -81,7 +81,7 @@ public class BlackJackEngineResult {
                         gameLoginMap.put("gamePlayStatus", GameConstant.BJ_BLACKJACK_GAME_STATUS_INSURANCE);
                         gameLoginMap.put("currentHandIndex", handIndex);
                         gameLoginMap.put("blackJackBetInfos", blackJackGameLogicBean.getBlackJackBetInfos());
-                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null);
+                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null, null);
                         if (handIndex == blackJackConfigInfo.getHandCount()) {
                             handIndex = 1;
                         } else if (handIndex < blackJackConfigInfo.getHandCount()) {
@@ -90,7 +90,7 @@ public class BlackJackEngineResult {
                     } else if (dealerStatus == BlackJackGameConstant.DEALER_PEEK_BJ) {
                         gameLoginMap.put("gamePlayStatus", GameConstant.BJ_BLACKJACK_GAME_STATUS_PEEK_BLACKJACK);
                         gameLoginMap.put("blackJackBetInfos", blackJackGameLogicBean.getBlackJackBetInfos());
-                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null);
+                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null, null);
                     } else if (dealerStatus == BlackJackGameConstant.DEALER_WAIT_FOR_HANDS) {
                         BlackJackResult blackJackResult = blackJackResultList.get(handIndex - 1);
                         List<Integer> handCardPointList = blackJackResult.getCardsPoint();
@@ -156,11 +156,11 @@ public class BlackJackEngineResult {
                         gameLoginMap.put("currentHandIndex", handIndex);
                         gameLoginMap.put("gamePlayStatus", gamePlayStatus);
                         gameLoginMap.put("blackJackBetInfos", blackJackGameLogicBean.getBlackJackBetInfos());
-                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null);
+                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null, null);
                     } else if (dealerStatus == BlackJackGameConstant.DEALER_DEAL) {
                         gameLoginMap.put("gamePlayStatus", GameConstant.BJ_BLACKJACK_GAME_STATUS_DEALER_DRAW);
                         gameLoginMap.put("blackJackBetInfos", blackJackGameLogicBean.getBlackJackBetInfos());
-                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null);
+                        blackJackGameLogicBean = (BlackJackGameLogicBean) engine.gameProgress(blackJackGameLogicBean, gameLoginMap, null, engineContextMap, null, null);
                     }
                     if (blackJackGameLogicBean.getGamePlayStatus() == GameConstant.GAME_STATUS_COMPLETE) {
                         blackJackResultList = blackJackGameLogicBean.getBlackJackResults();
