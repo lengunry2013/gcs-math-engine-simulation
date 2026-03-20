@@ -1,6 +1,7 @@
 package com.gcs.game.simulation.slot.engine;
 
 import com.gcs.game.engine.IGameEngine;
+import com.gcs.game.engine.slots.bonus.BaseChoiceMatchBonus;
 import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.engine.slots.utils.SlotEngineConstant;
 import com.gcs.game.engine.slots.vo.*;
@@ -14,9 +15,11 @@ import com.gcs.game.simulation.util.BaseConstant;
 import com.gcs.game.simulation.util.FileWriteUtil;
 import com.gcs.game.simulation.vo.BaseConfigInfo;
 import com.gcs.game.testengine.GameModelFactoryTest;
+import com.gcs.game.testengine.math.model20260201.Model20260201Test;
 import com.gcs.game.testengine.model.IBaseReelsDefaultConfig;
 import com.gcs.game.utils.GameConstant;
 import com.gcs.game.utils.RandomUtil;
+import com.gcs.game.utils.RandomWeightUntil;
 import com.gcs.game.vo.BaseGameLogicBean;
 import com.gcs.game.vo.PlayerInputInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +51,7 @@ public class BaseReelsGameSpinResult {
             long simulationCount = configInfo.getSimulationCount();
             int playTime = configInfo.getPlayTimesPerPlayer();
             long initCredit = configInfo.getInitCredit();
+            double playerCredit = initCredit;
             SlotGameLogicBean gameLogicBean = (SlotGameLogicBean) baseGameLogicBean;
             SlotConfigInfo slotConfigInfo = (SlotConfigInfo) configInfo;
 
@@ -69,29 +73,75 @@ public class BaseReelsGameSpinResult {
                 initFsBonusStdDev(slotConfigInfo, resultInfo);
             }
             int outputIndex = 0;
+            int[] initJackpotMeter = null;
+            if (model instanceof Model20260201Test) {
+                Model20260201Test mathModel = (Model20260201Test) model;
+                MissSpookySpinResult.initJackpotMeter(mathModel.getJackpotInitMeter(), resultInfo);
+                initJackpotMeter = mathModel.getJackpotInitMeter();
+            }
+            long minBet = model.minLines() * model.minBetPerLine();
 
             //start simulation
             for (int i = 0; i < simulationCount; i++) {
-                spinCount++;
-                long totalWon = 0L;
+                double totalWon = 0L;
                 long baseCoinOut = 0L;
                 long fsCoinOut = 0;
-                long bonusCoinOut = 0;
+                double bonusCoinOut = 0;
+                boolean isWagerSaver = false;
                 setTiersInfo(tiersInfo, slotConfigInfo);
                 Map gameLogicMap = new LinkedHashMap();
                 gameLogicMap.put("lines", slotConfigInfo.getLines());
-                gameLogicMap.put("bet", slotConfigInfo.getBet());
                 gameLogicMap.put("denom", slotConfigInfo.getDenom());
+                if (slotConfigInfo.isRandomBet()) {
+                    int betIndex = RandomUtil.getRandomInt(MissSpookySpinResult.BET_LEVEL.length);
+                    gameLogicMap.put("bet", MissSpookySpinResult.BET_LEVEL[betIndex]);
+                } else {
+                    gameLogicMap.put("bet", slotConfigInfo.getBet());
+                }
+
+                if (playerCredit <= 0) {
+                    playerCredit = initCredit;
+                }
+
+                //spin之前判断是否小于minBet,小于minBet在去随机
+                if (model instanceof Model20260201Test) {
+                    if (playerCredit > 0 && playerCredit < minBet) {
+                        double remainRate = playerCredit / minBet;
+                        int weight = (int) (remainRate * 10000);
+                        int[] remainCreditWeight = new int[]{10000 - weight, weight};
+                        RandomWeightUntil randomWeightUntil = new RandomWeightUntil(remainCreditWeight);
+                        int triggerWagerSaver = randomWeightUntil.getRandomResult();
+                        if (triggerWagerSaver == 1) {
+                            resultInfo.setTotalCoinIn(resultInfo.getTotalCoinIn() + playerCredit);
+                            playerCredit = minBet;
+                            gameLogicMap.put("bet", model.minBetPerLine());
+                            isWagerSaver = true;
+                        } else {
+                            resultInfo.setTotalCoinIn(resultInfo.getTotalCoinIn() + playerCredit);
+                            playerCredit = 0;
+                            playerCredit += initCredit;
+                            i--;
+                            continue;
+                        }
+                    }
+                }
+                spinCount++;
 
                 //star baseGame spin
                 gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null, null);
                 long totalBet = gameLogicBean.getSumBetCredit();
-                initCredit -= totalBet;
-
+                playerCredit -= totalBet;
+                if (model instanceof Model20260201Test) {
+                    double jackpotWin = computeJackpotWin(resultInfo, totalBet, model);
+                    tiersInfo.setBaseJackpotWin(jackpotWin);
+                    totalWon += jackpotWin;
+                }
                 resultInfo.setSpinCount(spinCount);
                 resultInfo.setBetPerLine((int) gameLogicBean.getBet());
                 resultInfo.setLine((int) gameLogicBean.getLines());
-                resultInfo.setTotalCoinIn(resultInfo.getTotalCoinIn() + totalBet);
+                if (!isWagerSaver) {
+                    resultInfo.setTotalCoinIn(resultInfo.getTotalCoinIn() + totalBet);
+                }
                 long winCredit = gameLogicBean.getSumWinCredit();
                 long scatterWin = computeScatterWin(gameLogicBean.getSlotSpinResult(), model);
                 baseCoinOut += winCredit - scatterWin;  //TODO Scatter symbol win
@@ -223,8 +273,22 @@ public class BaseReelsGameSpinResult {
                                         fsType = ((BaseMultiSlotFsOrPickBonusResult) baseBonusResult).getFreespinType();
                                     }*/
                                     long bonusWon = baseBonusResult.getTotalPay();
-                                    bonusCoinOut += bonusWon;
-                                    totalWon += bonusWon;
+                                    if (model instanceof Model20260201Test) {
+                                        if (baseBonusResult instanceof SlotChoiceBonusResult) {
+                                            int hitLevel = ((SlotChoiceBonusResult) baseBonusResult).getHitLevel();
+                                            double bonusWin = resultInfo.getJackpotMeter()[hitLevel];
+                                            resultInfo.getJackpotHitMeter()[hitLevel] += bonusWin;
+                                            resultInfo.getJackpotMeter()[hitLevel] = initJackpotMeter[hitLevel];
+                                            bonusCoinOut += bonusWin;
+                                            totalWon += bonusWin;
+                                        } else {
+                                            bonusCoinOut += bonusWon;
+                                            totalWon += bonusWon;
+                                        }
+                                    } else {
+                                        bonusCoinOut += bonusWon;
+                                        totalWon += bonusWon;
+                                    }
                                     if (!isAchievement && tiersInfo != null) {
                                         setTierBonusInfo(bonusType, bonusWon, slotConfigInfo, tiersInfo);
                                     }
@@ -245,8 +309,8 @@ public class BaseReelsGameSpinResult {
                 resultInfo.setTotalCoinOut(
                         resultInfo.getTotalCoinOut() + totalWon);
                 resultInfo.setTotalAmount(totalWon);
-                initCredit += totalWon;
-                resultInfo.setLeftCredit(initCredit);
+                playerCredit += totalWon;
+                resultInfo.setLeftCredit(playerCredit);
                 //Total Win
                 if (resultInfo.getPayWeightMap().containsKey(totalWon)) {
                     long value = resultInfo.getPayWeightMap().get(totalWon) + 1;
@@ -256,7 +320,7 @@ public class BaseReelsGameSpinResult {
                 }
                 //BaseGame Win
                 if (resultInfo.getBasePayWeightMap().containsKey(baseCoinOut)) {
-                    long value = resultInfo.getPayWeightMap().get(baseCoinOut) + 1;
+                    long value = resultInfo.getBasePayWeightMap().get(baseCoinOut) + 1;
                     resultInfo.getBasePayWeightMap().put(baseCoinOut, value);
                 } else {
                     resultInfo.getBasePayWeightMap().put(baseCoinOut, 1L);
@@ -309,10 +373,32 @@ public class BaseReelsGameSpinResult {
         }
     }
 
+    private double computeJackpotWin(BaseResultInfo resultInfo, long totalBet, BaseSlotModel model) {
+        double jackpotWin = 0.0;
+        if (model instanceof Model20260201Test) {
+            Model20260201Test mathModel = (Model20260201Test) model;
+            int[] initJackpotMeter = mathModel.getJackpotInitMeter();
+            int[] maxJackpotMeter = mathModel.getJackpotMaxMeter();
+            double[] contributionRate = mathModel.getJackpotContributionRate();
+            for (int i = 0; i < maxJackpotMeter.length; i++) {
+                resultInfo.getJackpotMeter()[i] += contributionRate[i] * totalBet;
+                if (resultInfo.getJackpotMeter()[i] >= maxJackpotMeter[i]) {
+                    resultInfo.getJackpotHitMeter()[i] += resultInfo.getJackpotMeter()[i];
+                    resultInfo.getJackpotMeter()[i] = initJackpotMeter[i];
+                    resultInfo.getHitLevelCount()[i]++;
+                    jackpotWin += resultInfo.getJackpotMeter()[i];
+                    resultInfo.setJackpotHit(resultInfo.getJackpotHit() + 1);
+                    resultInfo.setJackpotWin(resultInfo.getJackpotWin() + jackpotWin);
+                }
+            }
+        }
+        return jackpotWin;
+    }
+
     private void computeBaseStdDev(SlotConfigInfo slotConfigInfo, BaseResultInfo resultInfo, long baseCoinOut, long totalBet) {
         //compute Base Deviation
         double basePayBack = baseCoinOut * 1.0 / totalBet;
-        double expPayBack = slotConfigInfo.getBaseExpRtp() * 1.0 / 100;
+        double expPayBack = slotConfigInfo.getBaseExpRtp() / 100;
         double deviation = Math.pow((basePayBack - expPayBack), 2);
         resultInfo.setBaseStdDeviation(resultInfo.getBaseStdDeviation() + deviation);
     }
@@ -507,10 +593,10 @@ public class BaseReelsGameSpinResult {
                 for (long bonusHits : resultInfo.getBonusPerHit()[i]) {
                     strContent.append(bonusHits).append(BaseConstant.TAB_STR);
                 }
-                for (long bonusWin : resultInfo.getBonusTypeTotalWin()[i]) {
+                for (double bonusWin : resultInfo.getBonusTypeTotalWin()[i]) {
                     strContent.append(bonusWin).append(BaseConstant.TAB_STR);
                 }
-                for (long bonusMax : resultInfo.getBonusMaxPay()[i]) {
+                for (double bonusMax : resultInfo.getBonusMaxPay()[i]) {
                     strContent.append(bonusMax).append(BaseConstant.TAB_STR);
                 }
             }
@@ -665,6 +751,8 @@ public class BaseReelsGameSpinResult {
                 strbHeader.append("Base Total Win").append(BaseConstant.TAB_STR);
                 strbHeader.append("Base Win Standard Deviation").append(BaseConstant.TAB_STR);
                 strbHeader.append("Base RTP Standard Deviation").append(BaseConstant.TAB_STR);
+                strbHeader.append("Base Jackpot Total Hit").append(BaseConstant.TAB_STR);
+                strbHeader.append("Base Jackpot Total Win").append(BaseConstant.TAB_STR);
             }
             FileWriteUtil.writeFileHeadInfo(configInfo.getOutputFileName(), strbHeader.toString());
         }
@@ -677,13 +765,13 @@ public class BaseReelsGameSpinResult {
                 .append(BaseConstant.TAB_STR);
         strContent.append(resultInfo.getTotalCoinOut())
                 .append(BaseConstant.TAB_STR);
-        double payBack = resultInfo.getTotalCoinOut() * 1.0
+        double payBack = resultInfo.getTotalCoinOut()
                 / resultInfo.getTotalCoinIn();
         strContent.append(payBack).append(BaseConstant.TAB_STR);
-        double averageWin = resultInfo.getTotalCoinOut() * 1.0 / resultInfo.getSpinCount();
+        double averageWin = resultInfo.getTotalCoinOut() / resultInfo.getSpinCount();
         double varWin = 0.0;
-        for (Map.Entry<Long, Long> entry : resultInfo.getPayWeightMap().entrySet()) {
-            long pay = entry.getKey();
+        for (Map.Entry<Double, Long> entry : resultInfo.getPayWeightMap().entrySet()) {
+            double pay = entry.getKey();
             long weight = entry.getValue();
             varWin += weight * Math.pow((pay - averageWin), 2);
         }
@@ -695,7 +783,7 @@ public class BaseReelsGameSpinResult {
             for (long maxWinCount : resultInfo.getMaxWinCount()) {
                 strContent.append(maxWinCount).append(BaseConstant.TAB_STR);
             }
-            for (long maxWinPay : resultInfo.getMaxWinTotalPay()) {
+            for (double maxWinPay : resultInfo.getMaxWinTotalPay()) {
                 strContent.append(maxWinPay).append(BaseConstant.TAB_STR);
             }
             for (long maxPayBase : resultInfo.getBaseTotalMaxPay()) {
@@ -704,13 +792,13 @@ public class BaseReelsGameSpinResult {
             for (long maxPayFs : resultInfo.getFsTotalMaxPay()) {
                 strContent.append(maxPayFs).append(BaseConstant.TAB_STR);
             }
-            for (long maxPayBonus : resultInfo.getBonusTotalMaxPay()) {
+            for (double maxPayBonus : resultInfo.getBonusTotalMaxPay()) {
                 strContent.append(maxPayBonus).append(BaseConstant.TAB_STR);
             }
             for (long maxPayHit : resultInfo.getMaxPayTotalHit()) {
                 strContent.append(maxPayHit).append(BaseConstant.TAB_STR);
             }
-            for (long maxPayAward : resultInfo.getScreenMaxPay()) {
+            for (double maxPayAward : resultInfo.getScreenMaxPay()) {
                 strContent.append(maxPayAward).append(BaseConstant.TAB_STR);
             }
             for (long basePay : resultInfo.getBaseTotalPay()) {
@@ -719,7 +807,7 @@ public class BaseReelsGameSpinResult {
             for (long fsPay : resultInfo.getFsTotalPay()) {
                 strContent.append(fsPay).append(BaseConstant.TAB_STR);
             }
-            for (long bonusPay : resultInfo.getBonusTotalPay()) {
+            for (double bonusPay : resultInfo.getBonusTotalPay()) {
                 strContent.append(bonusPay).append(BaseConstant.TAB_STR);
             }
             if (configInfo.isFsPay()) {
@@ -741,7 +829,7 @@ public class BaseReelsGameSpinResult {
                     double fsVarWin = 0.0;
                     double fsAverageWin = 0.0;
                     if (fsTotalEntries > 0) {
-                        fsAverageWin = fsSumWin / fsTotalEntries;
+                        fsAverageWin = fsSumWin * 1.0 / fsTotalEntries;
                     }
                     for (Map.Entry<Long, Long> entry : fsPayWeight.entrySet()) {
                         long pay = entry.getKey();
@@ -757,15 +845,15 @@ public class BaseReelsGameSpinResult {
             if (configInfo.isBonusPay()) {
                 //compute bonus Win/RTP Standard Deviation
                 for (int i = 0; i < resultInfo.getBonusStdDeviation().length; i++) {
-                    Map<Long, Long> bonusPayWeight = resultInfo.getBonusPayWeightMapList().get(i);
+                    Map<Double, Long> bonusPayWeight = resultInfo.getBonusPayWeightMapList().get(i);
                     long[] bonusEntries = resultInfo.getBonusEntries()[i];
-                    long[] bonusTotalWin = resultInfo.getBonusTypeTotalWin()[i];
+                    double[] bonusTotalWin = resultInfo.getBonusTypeTotalWin()[i];
                     long bonusTotalEntries = 0L;
-                    long bonusSumWin = 0L;
+                    double bonusSumWin = 0L;
                     for (long bonusHit : bonusEntries) {
                         bonusTotalEntries += bonusHit;
                     }
-                    for (long bonusWin : bonusTotalWin) {
+                    for (double bonusWin : bonusTotalWin) {
                         bonusSumWin += bonusWin;
                     }
                     strContent.append(bonusTotalEntries).append(BaseConstant.TAB_STR);
@@ -775,8 +863,8 @@ public class BaseReelsGameSpinResult {
                     if (bonusTotalEntries > 0) {
                         bonusAverageWin = bonusSumWin / bonusTotalEntries;
                     }
-                    for (Map.Entry<Long, Long> entry : bonusPayWeight.entrySet()) {
-                        long pay = entry.getKey();
+                    for (Map.Entry<Double, Long> entry : bonusPayWeight.entrySet()) {
+                        Double pay = entry.getKey();
                         long weight = entry.getValue();
                         bonusVarWin += weight * Math.pow((pay - bonusAverageWin), 2);
                     }
@@ -800,14 +888,16 @@ public class BaseReelsGameSpinResult {
             strContent.append(baseWinStdDev).append(BaseConstant.TAB_STR);
             double baseStdDev = Math.sqrt(resultInfo.getBaseStdDeviation() / resultInfo.getSpinCount());
             strContent.append(baseStdDev).append(BaseConstant.TAB_STR);
+            strContent.append(resultInfo.getJackpotHit()).append(BaseConstant.TAB_STR);
+            strContent.append(resultInfo.getJackpotWin()).append(BaseConstant.TAB_STR);
         }
         FileWriteUtil.outputPrint(strContent.toString(), configInfo.getOutputFileName(), configInfo, 0);
     }
 
     private void computeMaxWinCount(BaseResultInfo resultInfo, SlotConfigInfo configInfo, TiersInfo tiersInfo) {
         if (resultInfo.getMaxWinCount() != null && resultInfo.getMaxWinCount().length > 0) {
-            if (tiersInfo.getTotalWon() != (tiersInfo.getBaseWin() + tiersInfo.getFsWin() + tiersInfo.getBonusWin())) {
-                System.out.println("totalWon=" + tiersInfo.getTotalWon() + ",baseWin=" + tiersInfo.getBaseWin() + ",fsWin=" + tiersInfo.getFsWin() + ",bonusWin=" + tiersInfo.getBonusWin());
+            if (tiersInfo.getTotalWon() != (tiersInfo.getBaseWin() + tiersInfo.getFsWin() + tiersInfo.getBonusWin() + tiersInfo.getBaseJackpotWin())) {
+                System.out.println("totalWon=" + tiersInfo.getTotalWon() + ",baseWin=" + tiersInfo.getBaseWin() + ",fsWin=" + tiersInfo.getFsWin() + ",bonusWin=" + tiersInfo.getBonusWin() + ",baseJackpotWin=" + tiersInfo.getBaseJackpotWin());
                 log.debug("totalWon=" + tiersInfo.getTotalWon() + ",baseWin=" + tiersInfo.getBaseWin() + ",fsWin=" + tiersInfo.getFsWin() + ",bonusWin=" + tiersInfo.getBonusWin());
                 log.error("computeMaxWinCount(), compute baseWin+fsWin+bonusWin!=totalWon error!");
                 throw new IllegalArgumentException("compute baseWin+fsWin+bonusWin!=totalWon error!");
@@ -957,7 +1047,7 @@ public class BaseReelsGameSpinResult {
             long fsWin = tiersInfo.getFsWin();
             int fsType = tiersInfo.getFsType();
             double fsPayBack = fsWin * 1.0 / tiersInfo.getTotalBet();
-            double fsExpPayBack = configInfo.getFsRtp()[fsType] * 1.0 / 100;
+            double fsExpPayBack = configInfo.getFsRtp()[fsType] / 100;
             double fsDeviation = Math.pow((fsPayBack - fsExpPayBack), 2);
             resultInfo.getFsStdDeviation()[fsType] += fsDeviation;
             Map<Long, Long> fsPayWeight = resultInfo.getFsPayWeightMapList().get(fsType);
@@ -969,13 +1059,13 @@ public class BaseReelsGameSpinResult {
             }
         }
         if (configInfo.isBonusPay() && tiersInfo.getBonusHit() > 0) {
-            long bonusWin = tiersInfo.getBonusWin();
+            double bonusWin = tiersInfo.getBonusWin();
             int bonusType = tiersInfo.getBonusType();
-            double bonusPayBack = bonusWin * 1.0 / tiersInfo.getTotalBet();
-            double bonusExpPayBack = configInfo.getBonusRtp()[bonusType] * 1.0 / 100;
+            double bonusPayBack = bonusWin / tiersInfo.getTotalBet();
+            double bonusExpPayBack = configInfo.getBonusRtp()[bonusType] / 100;
             double bonusDeviation = Math.pow((bonusPayBack - bonusExpPayBack), 2);
             resultInfo.getBonusStdDeviation()[bonusType] += bonusDeviation;
-            Map<Long, Long> bonusPayWeight = resultInfo.getBonusPayWeightMapList().get(bonusType);
+            Map<Double, Long> bonusPayWeight = resultInfo.getBonusPayWeightMapList().get(bonusType);
             if (bonusPayWeight.containsKey(bonusWin)) {
                 long value = bonusPayWeight.get(bonusWin) + 1;
                 bonusPayWeight.put(bonusWin, value);
@@ -985,10 +1075,10 @@ public class BaseReelsGameSpinResult {
         }
     }
 
-    private void computeStdDev(SlotConfigInfo configInfo, BaseResultInfo resultInfo, long totalWon, long totalBet) {
+    private void computeStdDev(SlotConfigInfo configInfo, BaseResultInfo resultInfo, double totalWon, long totalBet) {
         //compute Total deviation
-        double payBack = totalWon * 1.0 / totalBet;
-        double expPayBack = configInfo.getPayback() / 10000;
+        double payBack = totalWon / totalBet;
+        double expPayBack = (double) configInfo.getPayback() / 10000;
         double deviation = Math.pow((payBack - expPayBack), 2);
         resultInfo.setStdDeviation(resultInfo.getStdDeviation() + deviation);
     }
@@ -1475,11 +1565,11 @@ public class BaseReelsGameSpinResult {
 
     private void setTiersInfo(TiersInfo tiersInfo, SlotConfigInfo configInfo) {
         if (tiersInfo != null) {
-            tiersInfo.setTotalWon(0L);
+            tiersInfo.setTotalWon(0.0);
             tiersInfo.setTotalBet(0L);
             tiersInfo.setBaseWin(0L);
             tiersInfo.setFsWin(0L);
-            tiersInfo.setBonusWin(0L);
+            tiersInfo.setBonusWin(0.0);
             tiersInfo.setHighSymbolCount(0);
             tiersInfo.setStackCount(0);
             tiersInfo.setStackWildCount(0);
@@ -1511,9 +1601,9 @@ public class BaseReelsGameSpinResult {
         }
         if (configInfo.isBonusPay()) {
             double[] bonusStdDev = new double[configInfo.getBonusRtp().length];
-            List<Map<Long, Long>> bonusPayWeightMapList = new ArrayList<Map<Long, Long>>();
+            List<Map<Double, Long>> bonusPayWeightMapList = new ArrayList<Map<Double, Long>>();
             for (int i = 0; i < configInfo.getBonusRtp().length; i++) {
-                Map<Long, Long> bonusPayWeightMap = new HashMap<Long, Long>();
+                Map<Double, Long> bonusPayWeightMap = new HashMap<Double, Long>();
                 bonusPayWeightMapList.add(bonusPayWeightMap);
             }
             resultInfo.setBonusStdDeviation(bonusStdDev);
@@ -1532,16 +1622,16 @@ public class BaseReelsGameSpinResult {
             }
             int highSymbolLen = configInfo.getPlayGameCount() * rowCount * reelsCount + 1;
             long[] maxWinCount = new long[maxWin.length + 1];
-            long[] maxWinPay = new long[maxWin.length + 1];
+            double[] maxWinPay = new double[maxWin.length + 1];
             long[] maxWinBasePay = new long[maxWin.length + 1];
             long[] maxWinFsPay = new long[maxWin.length + 1];
-            long[] maxWinBonusPay = new long[maxWin.length + 1];
+            double[] maxWinBonusPay = new double[maxWin.length + 1];
             long[] maxPayTotalHit = new long[maxWin.length + 1];
-            long[] maxPay = new long[maxWin.length + 1];
+            double[] maxPay = new double[maxWin.length + 1];
             long[][] highSymbol = new long[maxWin.length + 1][highSymbolLen];
             long[] baseTotalPay = new long[maxWin.length + 1];
             long[] fsTotalPay = new long[maxWin.length + 1];
-            long[] bonusTotalPay = new long[maxWin.length + 1];
+            double[] bonusTotalPay = new double[maxWin.length + 1];
             long[][] horizontalSymbol = new long[maxWin.length + 1][rowCount + 1];
 
             if (configInfo.getMissSymbol() != null && configInfo.getMissSymbol().length > 0) {
@@ -1590,8 +1680,8 @@ public class BaseReelsGameSpinResult {
                 long[][] bonusEntries = new long[configInfo.getBonusType()][maxWin.length + 1];
                 long[][] bonusTimes = new long[configInfo.getBonusType()][maxWin.length + 1];
                 long[][] bonusHits = new long[configInfo.getBonusType()][maxWin.length + 1];
-                long[][] bonusMaxPay = new long[configInfo.getBonusType()][maxWin.length + 1];
-                long[][] bonusTotalWin = new long[configInfo.getBonusType()][maxWin.length + 1];
+                double[][] bonusMaxPay = new double[configInfo.getBonusType()][maxWin.length + 1];
+                double[][] bonusTotalWin = new double[configInfo.getBonusType()][maxWin.length + 1];
                 resultInfo.setBonusEntries(bonusEntries);
                 resultInfo.setBonusTimes(bonusTimes);
                 resultInfo.setBonusPerHit(bonusHits);

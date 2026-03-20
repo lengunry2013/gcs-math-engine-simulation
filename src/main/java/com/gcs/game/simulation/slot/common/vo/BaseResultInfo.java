@@ -20,12 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BaseResultInfo {
 
     private long spinCount = 0L;
-    private long leftCredit = 0L;
+    private double leftCredit = 0L;
     private int line = 0;
     private int betPerLine = 0;
     private double totalAmount = 0L;
     private long totalHit = 0L;
-    private long totalCoinIn = 0L;
+    private double totalCoinIn = 0L;
     private double totalCoinOut = 0L;
     private long baseGameHit = 0L;
     private long baseGameTotalWin = 0L;
@@ -85,11 +85,11 @@ public class BaseResultInfo {
     private Map<Long, Long> basePayWeightMap = new ConcurrentHashMap<>();
     private List<Map<Long, Long>> fsPayWeightMapList = null;
 
-    private List<Map<Long, Long>> bonusPayWeightMapList = null;
+    private List<Map<Double, Long>> bonusPayWeightMapList = null;
 
     private long[] maxWinCount = null;
 
-    private long[] maxWinTotalPay = null;
+    private double[] maxWinTotalPay = null;
 
     /**
      * compute tiers  Percentage of max pay baseGame,
@@ -107,9 +107,9 @@ public class BaseResultInfo {
      * compute tiers Percentage of bonus
      * tier=5 4*totalBet<win<=5*totalBet,maxPay=5*totalBet=2500,baseGameWin=1000,fs=1000,bonusWin=500,fsPayPer=5*(500/2500)=1
      */
-    private long[] bonusTotalMaxPay = null;
+    private double[] bonusTotalMaxPay = null;
 
-    private long[] screenMaxPay = null;
+    private double[] screenMaxPay = null;
 
     private long[] maxPayTotalHit = null;
 
@@ -120,7 +120,7 @@ public class BaseResultInfo {
 
     private long[] fsTotalPay = null;
 
-    private long[] bonusTotalPay = null;
+    private double[] bonusTotalPay = null;
 
     //miss symbol S_02 ~ S_05,according to math's own definition
     private long[][] nearMissSymbolHit = null;
@@ -149,9 +149,9 @@ public class BaseResultInfo {
 
     private long[][] bonusPerHit = null;
 
-    private long[][] bonusTypeTotalWin = null;
+    private double[][] bonusTypeTotalWin = null;
 
-    private long[][] bonusMaxPay = null;
+    private double[][] bonusMaxPay = null;
 
     //o x x x x
     //o o x x x
@@ -167,7 +167,7 @@ public class BaseResultInfo {
     private double screenMaxAward = 0L;
 
 
-    private Map<Long, Long> payWeightMap = new ConcurrentHashMap<Long, Long>();
+    private Map<Double, Long> payWeightMap = new ConcurrentHashMap<Double, Long>();
 
     /*
      * last spin info
@@ -209,7 +209,7 @@ public class BaseResultInfo {
 
     private long[] collectionCountsForMaximumWin = null;
 
-    private long peakBankrollForEveryPlayer = leftCredit;
+    private double peakBankrollForEveryPlayer = leftCredit;
 
     //The spin times of the interval between two bonus
     private long[] playsPerBonusHit = null;
@@ -222,12 +222,17 @@ public class BaseResultInfo {
     private long minPlaysPerFsSpinCount = 0L;
     private long maxPlaysPerFsSpinCount = 0L;
 
+    //local progressive jackpot
+    private double[] jackpotMeter = new double[4];
+    private double[] jackpotHitMeter = new double[4];
+    private int[] hitLevelCount = new int[4];
+
     //private long screenMaxAwardHit = 0L;
     private int specialSymbol = 2;
 
     private long jackpotHit = 0;
     //jackpot win cent
-    private long jackpotWin = 0;
+    private double jackpotWin = 0;
 
     private long denom = 0;
 

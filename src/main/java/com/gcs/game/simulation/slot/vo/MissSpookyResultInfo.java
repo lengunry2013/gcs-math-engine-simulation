@@ -25,8 +25,11 @@ public class MissSpookyResultInfo extends BaseResultInfo {
 
     private long[] wildFsWin = new long[15];
 
-    private long[] BonusWinComboHit = new long[14];
+    private long[] BonusWinComboHit = new long[4];
 
-    private long[] BonusWinComboWin = new long[14];
+    private double[] BonusWinComboWin = new double[4];
+
+    private long wagerSaverHitCount = 0L;
+    private double wagerSaverWin = 0.0;
 
 }

@@ -45,6 +45,7 @@ public class InputConfigReader {
     //Slots Game
     private static final String LINES_KEY = "lines";
     private static final String BET_KEY = "bet";
+    private static final String HAS_BET_RANDOM_KEY = "hasRandomBet";
     private static final String CHOICE_FS_BONUS_INDEX_KEY = "choiceFsOrBonusIndex";
     private static final String HAS_RANDOM_CHOICE_FS_BONUS_KEY = "hasRandomBonusChoice";
     private static final String MAX_WIN_KEY = "MaxWin";
@@ -188,6 +189,7 @@ public class InputConfigReader {
             configInfo = new SlotConfigInfo();
             long lines = getLongValue(LINES_KEY);
             long bet = getLongValue(BET_KEY);
+            boolean hasRandomBet = getIntValue(HAS_BET_RANDOM_KEY) == 1 ? true : false;
             int choiceFsBonusIndex = getIntValue(CHOICE_FS_BONUS_INDEX_KEY);
             boolean hasRandomBonusChoice = getIntValue(HAS_RANDOM_CHOICE_FS_BONUS_KEY) == 1 ? true : false;
             int[] maxWin = StringUtil.changeStrToArray(getStringValue(MAX_WIN_KEY), ",");
@@ -218,6 +220,7 @@ public class InputConfigReader {
             long[][] payTables = JSON.parseObject(getStringValue(PAY_TABLE_KEY), long[][].class);
             ((SlotConfigInfo) configInfo).setLines(lines);
             ((SlotConfigInfo) configInfo).setBet(bet);
+            ((SlotConfigInfo) configInfo).setRandomBet(hasRandomBet);
             ((SlotConfigInfo) configInfo).setChoiceFsOrBonusIndex(choiceFsBonusIndex);
             ((SlotConfigInfo) configInfo).setRandomBonusChoice(hasRandomBonusChoice);
             ((SlotConfigInfo) configInfo).setMaxWin(maxWin);

@@ -7,6 +7,7 @@ import lombok.Data;
 public class SlotConfigInfo extends BaseConfigInfo {
     private long lines = 1;
     private long bet = 1;
+    private boolean isRandomBet = false;
 
     private int choiceFsOrBonusIndex = -1;
 

@@ -5,13 +5,14 @@ import lombok.Data;
 @Data
 public class TiersInfo {
 
-    private long totalWon = 0L;
+    private double totalWon = 0.0;
     private long totalBet = 0L;
     private long baseWin = 0L;
+    private double baseJackpotWin = 0.0;
     private long fsWin = 0L;
     private long fsTimes = 0L;
     private long fsHits = 0L;
-    private long bonusWin = 0L;
+    private double bonusWin = 0.0;
     private long bonusHit = 0L;
     private int fsType = 0;
     private int bonusType = 0;
