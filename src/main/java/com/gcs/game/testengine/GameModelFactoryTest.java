@@ -13,6 +13,7 @@ import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.testengine.math.model1010802.Model1010802Test;
 import com.gcs.game.testengine.math.model1260130.Model1260130BonusTest;
 import com.gcs.game.testengine.math.model1260130.Model1260130Test;
+import com.gcs.game.testengine.math.model20260103.Model20260103Test;
 import com.gcs.game.testengine.math.model20260201.Model20260201BonusTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201FSBonusTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201Test;
@@ -70,6 +71,9 @@ public class GameModelFactoryTest extends GameModelFactory {
                 break;
             case "20260201":
                 model = new Model20260201Test();
+                break;
+            case "20260103":
+                model = new Model20260103Test();
                 break;
             default:
                 break;

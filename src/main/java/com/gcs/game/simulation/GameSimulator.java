@@ -6,6 +6,7 @@ import com.gcs.game.engine.blackJack.model.BaseBlackJackModel;
 import com.gcs.game.engine.keno.model.BaseKenoModel;
 import com.gcs.game.engine.math.model1010802.Model1010802Engine;
 import com.gcs.game.engine.math.model1260130.Model1260130Engine;
+import com.gcs.game.engine.math.model20260103.Model20260103Engine;
 import com.gcs.game.engine.math.model20260201.Model20260201Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
@@ -37,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20250106_V1.0";
+    private static String simulation_version_info = "20260506_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -97,6 +98,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260201Engine) {
                                 MissSpookySpinResult spinResult = new MissSpookySpinResult();
                                 spinResult.cycleSpinForMissSpooky(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260103Engine) {
+                                MakinBaconSpinResult spinResult = new MakinBaconSpinResult();
+                                spinResult.cycleSpinForMakinBacon(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {

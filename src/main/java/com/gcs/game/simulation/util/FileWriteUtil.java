@@ -142,4 +142,32 @@ public class FileWriteUtil {
     }
 
 
+    public static BufferedWriter initFreeSpinWriteFile(String fileName,
+                                                       BufferedWriter fsWriter) {
+        try {
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWiter = new FileWriter(file, false);
+            fsWriter = new BufferedWriter(fileWiter);
+        } catch (IOException e) {
+            log.error("", e);
+        }
+        return fsWriter;
+    }
+
+    public static void outputFsInfo(String str, BufferedWriter fsWriter) {
+        if (fsWriter != null) {
+            try {
+                System.out.println("[DEBUG]" + str);
+                fsWriter.write(str + NEW_LINE);
+                fsWriter.flush();
+            } catch (IOException e) {
+                log.error("output freeSpin information error", e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }
