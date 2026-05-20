@@ -8,6 +8,7 @@ import com.gcs.game.engine.math.model1010802.Model1010802Engine;
 import com.gcs.game.engine.math.model1260130.Model1260130Engine;
 import com.gcs.game.engine.math.model20260103.Model20260103Engine;
 import com.gcs.game.engine.math.model20260201.Model20260201Engine;
+import com.gcs.game.engine.math.model20260507.Model20260507Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -101,6 +102,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260103Engine) {
                                 MakinBaconSpinResult spinResult = new MakinBaconSpinResult();
                                 spinResult.cycleSpinForMakinBacon(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260507Engine) {
+                                CheddarQuestLinkSpinResult spinResult = new CheddarQuestLinkSpinResult();
+                                spinResult.cycleSpinForCheddarQuestLink(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {

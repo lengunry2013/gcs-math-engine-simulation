@@ -1,6 +1,7 @@
 package com.gcs.game.simulation.slot.engine;
 
 import com.gcs.game.engine.math.model1010802.Model1010802SpinResult;
+import com.gcs.game.engine.math.model20260507.Model20260507SpinResult;
 import com.gcs.game.engine.poker.utils.PokerGameConstant;
 import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.engine.slots.model.IWildPositionsChange;
@@ -13,6 +14,7 @@ import com.gcs.game.simulation.slot.common.vo.BaseResultInfo;
 import com.gcs.game.simulation.slot.common.vo.SymbolResultInfo;
 import com.gcs.game.simulation.slot.vo.SlotConfigInfo;
 import com.gcs.game.simulation.util.BaseConstant;
+import com.gcs.game.testengine.math.model20260507.Model20260507Test;
 import com.gcs.game.testengine.model.IBaseReelsDefaultConfig;
 import com.gcs.game.utils.RandomUtil;
 
@@ -147,6 +149,11 @@ public class GameEngineCompute {
                     for (int i = 0; i < hitSymbols.length; i++) {
                         int symbolNo = hitSymbols[i];
                         int symbolCount = hitSymbolCount[i];
+                        if (spinResult instanceof Model20260507SpinResult) {
+                            if (symbolNo == Model20260507Test.SW_SYMBOL || symbolNo == Model20260507Test.LINK_BONUS_SYMBOL) {
+                                continue;
+                            }
+                        }
                         if (symbolNo <= fsSymbolInfoList.size()) {
                             SymbolResultInfo symbolInfo = fsSymbolInfoList.get(symbolNo - 1);
                             symbolInfo.getHitPayCount()[symbolCount - 1]++;
