@@ -21,7 +21,8 @@ import com.gcs.game.vo.BaseGameLogicBean;
 import com.gcs.game.vo.PlayerInputInfo;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -541,10 +542,10 @@ public class BaseReelsGameSymbolSpinResult extends LittleDragonBunsSpinResult {
                 }
                 strContent.append(symbolInfo.getTotalAmount()).append(TAB_STR);
                 for (int i = 1; i < symbolInfo.getHitPayAmount().length; i++) {
-                    double payBackHitPay = symbolInfo.getHitPayAmount()[i] * 1.0 / resultInfo.getTotalCoinIn();
+                    BigDecimal payBackHitPay = BigDecimal.valueOf(symbolInfo.getHitPayAmount()[i]).divide(BigDecimal.valueOf(resultInfo.getTotalCoinIn()), 6, RoundingMode.HALF_UP);
                     strContent.append(payBackHitPay).append(TAB_STR);
                 }
-                double payBackTotalHitPay = symbolInfo.getTotalAmount() * 1.0 / resultInfo.getTotalCoinIn();
+                BigDecimal payBackTotalHitPay = BigDecimal.valueOf(symbolInfo.getTotalAmount()).divide(BigDecimal.valueOf(resultInfo.getTotalCoinIn()), 6, RoundingMode.HALF_UP);
                 strContent.append(payBackTotalHitPay).append(TAB_STR);
             }
         }

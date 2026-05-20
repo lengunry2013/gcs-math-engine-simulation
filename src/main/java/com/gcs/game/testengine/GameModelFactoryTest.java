@@ -3,9 +3,8 @@ package com.gcs.game.testengine;
 import com.gcs.game.engine.GameModelFactory;
 import com.gcs.game.engine.blackJack.model.BaseBlackJackModel;
 import com.gcs.game.engine.keno.model.BaseKenoModel;
-import com.gcs.game.engine.math.model20260201.Model20260201Bonus;
-import com.gcs.game.engine.math.model20260201.Model20260201FSBonus;
-import com.gcs.game.engine.math.model5070530.Model5070530;
+import com.gcs.game.engine.math.model20260104.Model20260104;
+import com.gcs.game.engine.math.model20260508.Model20260508;
 import com.gcs.game.engine.poker.bonus.PokerBonus;
 import com.gcs.game.engine.poker.model.BasePokerModel;
 import com.gcs.game.engine.slots.bonus.BaseBonus;
@@ -17,6 +16,7 @@ import com.gcs.game.testengine.math.model20260103.Model20260103Test;
 import com.gcs.game.testengine.math.model20260201.Model20260201BonusTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201FSBonusTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201Test;
+import com.gcs.game.testengine.math.model20260507.Model20260507Test;
 import com.gcs.game.testengine.math.model5070530.Model5070530Test;
 import com.gcs.game.testengine.math.model6060630.Model6060630BonusTest;
 import com.gcs.game.testengine.math.model6060630.Model6060630Test;
@@ -74,6 +74,15 @@ public class GameModelFactoryTest extends GameModelFactory {
                 break;
             case "20260103":
                 model = new Model20260103Test();
+                break;
+            case "20260104":
+                model = new Model20260104();
+                break;
+            case "20260507":
+                model = new Model20260507Test();
+                break;
+            case "20260508":
+                model = new Model20260508();
                 break;
             default:
                 break;
