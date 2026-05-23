@@ -1,6 +1,7 @@
 package com.gcs.game.simulation.slot.engine;
 
 import com.gcs.game.engine.IGameEngine;
+import com.gcs.game.engine.math.model20260520.Model20260520;
 import com.gcs.game.engine.slots.bonus.BaseChoiceMatchBonus;
 import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.engine.slots.utils.SlotEngineConstant;
@@ -16,6 +17,7 @@ import com.gcs.game.simulation.util.FileWriteUtil;
 import com.gcs.game.simulation.vo.BaseConfigInfo;
 import com.gcs.game.testengine.GameModelFactoryTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201Test;
+import com.gcs.game.testengine.math.model20260520.Model20260520Test;
 import com.gcs.game.testengine.model.IBaseReelsDefaultConfig;
 import com.gcs.game.utils.GameConstant;
 import com.gcs.game.utils.RandomUtil;
@@ -80,7 +82,11 @@ public class BaseReelsGameSpinResult {
                 initJackpotMeter = mathModel.getJackpotInitMeter();
             }
             long minBet = model.minLines() * model.minBetPerLine();
-
+            long totalPayCap = 0L;
+            if (model instanceof Model20260520Test) {
+                Model20260520Test mathModel = (Model20260520Test) model;
+                totalPayCap = mathModel.maxTotalPay();
+            }
             //start simulation
             for (int i = 0; i < simulationCount; i++) {
                 double totalWon = 0L;
@@ -143,6 +149,11 @@ public class BaseReelsGameSpinResult {
                     resultInfo.setTotalCoinIn(resultInfo.getTotalCoinIn() + totalBet);
                 }
                 long winCredit = gameLogicBean.getSumWinCredit();
+                if (model instanceof Model20260520Test) {
+                    if (winCredit >= totalPayCap) {
+                        winCredit = totalPayCap;
+                    }
+                }
                 long scatterWin = computeScatterWin(gameLogicBean.getSlotSpinResult(), model);
                 baseCoinOut += winCredit - scatterWin;  //TODO Scatter symbol win
                 totalWon += winCredit;
@@ -190,6 +201,9 @@ public class BaseReelsGameSpinResult {
                         isBaseTriggerRespin = true;
                     }
                     int fsType = 0;
+                    if (model instanceof Model20260520Test) {
+                        fsType = Model20260520Test.freespinType;
+                    }
                     //start freespin or bonus
                     while (true) {
                         if (gameLogicBean.getGamePlayStatus() == GameConstant.SLOT_GAME_STATUS_TRIGGER_FREESPIN) {
@@ -203,6 +217,11 @@ public class BaseReelsGameSpinResult {
                                 if (slotConfigInfo.getPlayGameCount() == 1) {
                                     fsSpinResult = gameLogicBean.getSlotFsSpinResults().get(gameLogicBean.getSlotFsSpinResults().size() - 1);
                                     freespinWon = fsSpinResult.getSlotPay();
+                                    if (model instanceof Model20260520Test) {
+                                        if (freespinWon >= totalPayCap) {
+                                            freespinWon = totalPayCap;
+                                        }
+                                    }
                                 } else if (slotConfigInfo.getPlayGameCount() > 1) {
                                     List<List<SlotSpinResult>> fsSpinResults = gameLogicBean.getSlotFsSpinResults4Multi();
                                     for (List<SlotSpinResult> spinResultList : fsSpinResults) {
