@@ -27,5 +27,7 @@ public class CheddarQuestLinkResultInfo extends BaseResultInfo {
     private long[] bonusSwWin = new long[10];
     private long[] triggerLinkBonusHit = new long[2];
     private long[] triggerLinkBonusWin = new long[2];
+    private long[] endLinkBonusHit = new long[26];
+    private long[] endLinkBonusWin = new long[26];
 
 }

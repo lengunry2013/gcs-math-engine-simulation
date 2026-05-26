@@ -58,11 +58,12 @@ public class CheddarQuestLinkSpinResult {
                 gameLogicMap.put("bet", slotConfigInfo.getBet());
                 gameLogicMap.put("denom", slotConfigInfo.getDenom());
 
-                InputInfo inputInfo = new InputInfo();
+                /*InputInfo inputInfo = new InputInfo();
                 List<int[]> inputPositions = new ArrayList<>();
                 inputPositions.add(new int[]{17, 40, 39, 14, 23});
                 inputInfo.setInputPosition(inputPositions);
-                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, inputInfo, null);
+                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, inputInfo, null);*/
+                gameLogicBean = (SlotGameLogicBean) engine.gameStart(gameLogicBean, gameLogicMap, null, null);
                 long totalBet = gameLogicBean.getSumBetCredit();
                 initCredit -= totalBet;
 
@@ -213,6 +214,9 @@ public class CheddarQuestLinkSpinResult {
                         resultInfo.getBonusSwHit()[winIndex]++;
                         resultInfo.getBonusSwWin()[winIndex] += swWin;
                     }
+                    int len = swSymbolsWin.size();
+                    resultInfo.getEndLinkBonusHit()[len - 5]++;
+                    resultInfo.getEndLinkBonusWin()[len - 5] += linkBonusWin;
                 }
             }
         }
@@ -389,6 +393,12 @@ public class CheddarQuestLinkSpinResult {
                 String Str = i == 0 ? "Base " : "Fs";
                 strbHeader.append(Str).append(" Link Bonus").append(" Win").append(BaseConstant.TAB_STR);
             }
+            for (int i = 0; i < resultInfo.getEndLinkBonusHit().length; i++) {
+                strbHeader.append("End LinkBonus SW").append(i + 5).append(" Hit").append(BaseConstant.TAB_STR);
+            }
+            for (int i = 0; i < resultInfo.getEndLinkBonusHit().length; i++) {
+                strbHeader.append("End LinkBonus SW").append(i + 5).append(" Win").append(BaseConstant.TAB_STR);
+            }
             FileWriteUtil.writeFileHeadInfo(configInfo.getOutputFileName(), strbHeader.toString());
         }
         StringBuilder strContent = new StringBuilder();
@@ -450,6 +460,12 @@ public class CheddarQuestLinkSpinResult {
             strContent.append(bonusHit).append(BaseConstant.TAB_STR);
         }
         for (long bonusWin : resultInfo.getTriggerLinkBonusWin()) {
+            strContent.append(bonusWin).append(BaseConstant.TAB_STR);
+        }
+        for (long bonusHit : resultInfo.getEndLinkBonusHit()) {
+            strContent.append(bonusHit).append(BaseConstant.TAB_STR);
+        }
+        for (long bonusWin : resultInfo.getEndLinkBonusWin()) {
             strContent.append(bonusWin).append(BaseConstant.TAB_STR);
         }
         FileWriteUtil.outputPrint(strContent.toString(), configInfo.getOutputFileName(), configInfo, 0);
