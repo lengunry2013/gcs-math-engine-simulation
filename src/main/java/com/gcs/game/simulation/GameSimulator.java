@@ -10,6 +10,7 @@ import com.gcs.game.engine.math.model20260103.Model20260103Engine;
 import com.gcs.game.engine.math.model20260201.Model20260201Engine;
 import com.gcs.game.engine.math.model20260507.Model20260507Engine;
 import com.gcs.game.engine.math.model20260520.Model20260520Engine;
+import com.gcs.game.engine.math.model20260530.Model20260530Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -40,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20260526_V1.0";
+    private static String simulation_version_info = "20260610_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -106,9 +107,12 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260507Engine) {
                                 CheddarQuestLinkSpinResult spinResult = new CheddarQuestLinkSpinResult();
                                 spinResult.cycleSpinForCheddarQuestLink(engine, gameLogicBean, configInfo, slotModel);
-                            }else if (engine instanceof Model20260520Engine) {
+                            } else if (engine instanceof Model20260520Engine) {
                                 LiquidGoldSpinResult spinResult = new LiquidGoldSpinResult();
                                 spinResult.cycleSpinForLiquidGold(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260530Engine) {
+                                RabbitSpinResult spinResult = new RabbitSpinResult();
+                                spinResult.cycleSpinForRabbit(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {

@@ -5,6 +5,7 @@ import com.gcs.game.engine.blackJack.model.BaseBlackJackModel;
 import com.gcs.game.engine.keno.model.BaseKenoModel;
 import com.gcs.game.engine.math.model20260104.Model20260104;
 import com.gcs.game.engine.math.model20260508.Model20260508;
+import com.gcs.game.engine.math.model20260530.Model20260530Bonus;
 import com.gcs.game.engine.poker.bonus.PokerBonus;
 import com.gcs.game.engine.poker.model.BasePokerModel;
 import com.gcs.game.engine.slots.bonus.BaseBonus;
@@ -18,6 +19,7 @@ import com.gcs.game.testengine.math.model20260201.Model20260201FSBonusTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201Test;
 import com.gcs.game.testengine.math.model20260507.Model20260507Test;
 import com.gcs.game.testengine.math.model20260520.Model20260520Test;
+import com.gcs.game.testengine.math.model20260530.Model20260530Test;
 import com.gcs.game.testengine.math.model5070530.Model5070530Test;
 import com.gcs.game.testengine.math.model6060630.Model6060630BonusTest;
 import com.gcs.game.testengine.math.model6060630.Model6060630Test;
@@ -88,6 +90,9 @@ public class GameModelFactoryTest extends GameModelFactory {
             case "20260520":
                 model = new Model20260520Test();
                 break;
+            case "20260530":
+                model = new Model20260530Test();
+                break;
             default:
                 break;
         }
@@ -106,6 +111,9 @@ public class GameModelFactoryTest extends GameModelFactory {
                 } else if ("bonus2".equalsIgnoreCase(bonusAsset)) {
                     model = new Model20260201BonusTest();
                 }
+                break;
+            case "20260530":
+                model = new Model20260530Bonus();
                 break;
             default:
                 break;
