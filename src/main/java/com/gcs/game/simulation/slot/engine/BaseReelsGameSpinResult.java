@@ -2,6 +2,7 @@ package com.gcs.game.simulation.slot.engine;
 
 import com.gcs.game.engine.IGameEngine;
 import com.gcs.game.engine.math.model20260520.Model20260520;
+import com.gcs.game.engine.math.model20260618.Model20260618SpinResult;
 import com.gcs.game.engine.slots.bonus.BaseChoiceMatchBonus;
 import com.gcs.game.engine.slots.model.BaseSlotModel;
 import com.gcs.game.engine.slots.utils.SlotEngineConstant;
@@ -18,6 +19,7 @@ import com.gcs.game.simulation.vo.BaseConfigInfo;
 import com.gcs.game.testengine.GameModelFactoryTest;
 import com.gcs.game.testengine.math.model20260201.Model20260201Test;
 import com.gcs.game.testengine.math.model20260520.Model20260520Test;
+import com.gcs.game.testengine.math.model20260618.Model20260618Test;
 import com.gcs.game.testengine.model.IBaseReelsDefaultConfig;
 import com.gcs.game.utils.GameConstant;
 import com.gcs.game.utils.RandomUtil;
@@ -154,6 +156,7 @@ public class BaseReelsGameSpinResult {
                         winCredit = totalPayCap;
                     }
                 }
+                //KingFish2 model20260618 scatter Win=bonusWin for test
                 long scatterWin = computeScatterWin(gameLogicBean.getSlotSpinResult(), model);
                 baseCoinOut += winCredit - scatterWin;  //TODO Scatter symbol win
                 totalWon += winCredit;
@@ -183,19 +186,40 @@ public class BaseReelsGameSpinResult {
                     GameEngineCompute.computeBaseAchievement(gameLogicBean, model,
                             resultInfo, slotConfigInfo);
                 }
+                //KingFish2 model20260618 scatter Win=bonusWin for test
+                if (model instanceof Model20260618Test) {
+                    if (!isAchievement) {
+                        setTierBonusInfo(1, scatterWin, slotConfigInfo, tiersInfo);
+                        bonusCoinOut += scatterWin;
+                    }
+                }
 
                 if (gameLogicBean.getGamePlayStatus() == GameConstant.SLOT_GAME_STATUS_COMPLETE) {
                     if (winCredit > 0) {
-                        resultInfo.setBaseGameHit(resultInfo.getBaseGameHit() + 1);
-                        resultInfo.setBaseGameTotalWin(
-                                resultInfo.getBaseGameTotalWin() + winCredit);
+                        if (model instanceof Model20260618Test) {
+                            resultInfo.setBaseGameHit(resultInfo.getBaseGameHit() + 1);
+                            resultInfo.setBaseGameTotalWin(
+                                    resultInfo.getBaseGameTotalWin() + baseCoinOut);
+                        } else {
+                            resultInfo.setBaseGameHit(resultInfo.getBaseGameHit() + 1);
+                            resultInfo.setBaseGameTotalWin(
+                                    resultInfo.getBaseGameTotalWin() + winCredit);
+                        }
                     }
                 } else {
                     resultInfo.setBaseGameHit(resultInfo.getBaseGameHit() + 1);
-                    if (winCredit > 0) {
-                        resultInfo.setBaseGameTotalWin(
-                                resultInfo.getBaseGameTotalWin() + winCredit);
+                    if (model instanceof Model20260618Test) {
+                        if (baseCoinOut > 0) {
+                            resultInfo.setBaseGameTotalWin(
+                                    resultInfo.getBaseGameTotalWin() + baseCoinOut);
+                        }
+                    } else {
+                        if (winCredit > 0) {
+                            resultInfo.setBaseGameTotalWin(
+                                    resultInfo.getBaseGameTotalWin() + winCredit);
+                        }
                     }
+
                     boolean isBaseTriggerRespin = false;
                     if (gameLogicBean.getRespinCountsLeft() > 0) {
                         isBaseTriggerRespin = true;
@@ -203,6 +227,8 @@ public class BaseReelsGameSpinResult {
                     int fsType = 0;
                     if (model instanceof Model20260520Test) {
                         fsType = Model20260520Test.freespinType;
+                    } else if (model instanceof Model20260618Test) {
+                        fsType = ((Model20260618SpinResult) gameLogicBean.getSlotSpinResult()).getFsType();
                     }
                     //start freespin or bonus
                     while (true) {
@@ -424,39 +450,23 @@ public class BaseReelsGameSpinResult {
 
     private long computeScatterWin(SlotSpinResult baseSpinResult, BaseSlotModel model) {
         long scatterWin = 0;
-        /*if (baseSpinResult != null) {
+        if (baseSpinResult != null) {
             int[] hitSymbols = baseSpinResult.getHitSlotSymbolsSound();
-            long[] hitAmounts = baseSpinResult.getHitSlotPays();
+            long[] hitPays = baseSpinResult.getHitSlotPays();
             int[] hitSymbolCount = baseSpinResult.getHitSlotSymbolCount();
-            if (model instanceof Model1030130Test) {
-                if (hitSymbols != null && hitAmounts != null) {
+            if (model instanceof Model20260618Test) {
+                if (hitSymbols != null) {
                     for (int i = 0; i < hitSymbols.length; i++) {
-                        if (hitSymbols[i] == BaseConstant.SCATTER_COMM_SYMBOL) {
-                            scatterWin += hitAmounts[i];
-                            break;
-                        }
-                    }
-                }
-            } else if (model instanceof Model1160130Test) {
-                if (hitSymbols != null && hitAmounts != null) {
-                    for (int i = 0; i < hitSymbols.length; i++) {
-                        if (hitSymbols[i] == BaseConstant.SCATTER_CON_SYMBOL && hitSymbolCount[i] == 3) {
-                            scatterWin += hitAmounts[i];
-                            break;
-                        }
-                    }
-                }
-            } else if (model instanceof Model1180130Test) {
-                if (hitSymbols != null && hitAmounts != null) {
-                    for (int i = 0; i < hitSymbols.length; i++) {
-                        if (hitSymbols[i] == BaseConstant.SCATTER_COMM_SYMBOL) {
-                            scatterWin += hitAmounts[i];
+                        if (hitSymbols[i] == Model20260618Test.SCATTER_SYMBOL && hitSymbolCount[i] == 3) {
+                            if (hitPays[i] > 0) {
+                                scatterWin = hitPays[i];
+                            }
                             break;
                         }
                     }
                 }
             }
-        }*/
+        }
         return scatterWin;
     }
 

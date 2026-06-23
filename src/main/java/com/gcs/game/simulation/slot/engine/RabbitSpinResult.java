@@ -119,16 +119,20 @@ public class RabbitSpinResult extends LittleDragonBunsSpinResult {
                                 totalWon += freespinWon;
                                 fsCoinOut += freespinWon;
                                 fsTotalTimes++;
+                                long scatterPrize = computeScPrize(fsSpinResult, resultInfo, totalBet);
                                 int fsFeatureType = fsSpinResult.getFeatureType();
+                                long fsLineWin = freespinWon - scatterPrize;
                                 if (fsFeatureType > 0) {
                                     resultInfo.getFsFeatureHit()[fsFeatureType - 1]++;
-                                    resultInfo.getFsFeatureWin()[fsFeatureType - 1] += freespinWon;
+                                    resultInfo.getFsFeatureWin()[fsFeatureType - 1] += fsLineWin;
+                                } else {
+                                    resultInfo.getFsFeatureHit()[5]++;
+                                    resultInfo.getFsFeatureWin()[5] += fsLineWin;
                                 }
                                 int fsScRandomIndex = fsSpinResult.getFsScRandomIndex();
                                 if (fsScRandomIndex >= 0) {
                                     resultInfo.getFsScTriggerHit()[fsScRandomIndex]++;
                                 }
-                                computeScPrize(fsSpinResult, resultInfo, totalBet);
                                 if (fsScRandomIndex < 0 && fsFeatureType < 0) {
                                     int[] hitSymbols = fsSpinResult.getHitSlotSymbols();
                                     int[] hitCount = fsSpinResult.getHitSlotSymbolCount();
@@ -232,10 +236,11 @@ public class RabbitSpinResult extends LittleDragonBunsSpinResult {
         }
     }
 
-    private void computeScPrize(Model20260530SpinResult fsSpinResult, RabbitResultInfo resultInfo, long totalBet) {
+    private long computeScPrize(Model20260530SpinResult fsSpinResult, RabbitResultInfo resultInfo, long totalBet) {
         int[] hitSymbols = fsSpinResult.getHitSlotSymbols();
         int[] hitCount = fsSpinResult.getHitSlotSymbolCount();
         long[] hitPay = fsSpinResult.getHitSlotPays();
+        long scatterPrize = 0;
         if (hitSymbols != null) {
             for (int j = 0; j < hitSymbols.length; j++) {
                 if (hitSymbols[j] == Model20260530Test.FS_SCATTER_SYMBOL && hitCount[j] == 1) {
@@ -243,9 +248,11 @@ public class RabbitSpinResult extends LittleDragonBunsSpinResult {
                     int winPayIndex = getWildMulIndex((int) winPay);
                     resultInfo.getFsScatterPrizeHit()[winPayIndex]++;
                     resultInfo.getFsScatterPrizeWin()[winPayIndex] += hitPay[j];
+                    scatterPrize += hitPay[j];
                 }
             }
         }
+        return scatterPrize;
     }
 
     private int getWildMulIndex(int wildMul) {

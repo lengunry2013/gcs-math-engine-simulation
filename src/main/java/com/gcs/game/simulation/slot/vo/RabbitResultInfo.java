@@ -15,8 +15,8 @@ public class RabbitResultInfo extends BaseResultInfo {
     private long[] normalScatterWin = new long[2];
     private long[] fsScatterPrizeHit = new long[4];
     private long[] fsScatterPrizeWin = new long[4];
-    private long[] fsFeatureHit = new long[5];
-    private long[] fsFeatureWin = new long[5];
+    private long[] fsFeatureHit = new long[6];
+    private long[] fsFeatureWin = new long[6];
     private long normalFsScatterHit = 0;
     private long[] fsScTriggerHit = new long[2];
     private long[] fsWlExpandHit = new long[2];

@@ -11,6 +11,7 @@ import com.gcs.game.engine.math.model20260201.Model20260201Engine;
 import com.gcs.game.engine.math.model20260507.Model20260507Engine;
 import com.gcs.game.engine.math.model20260520.Model20260520Engine;
 import com.gcs.game.engine.math.model20260530.Model20260530Engine;
+import com.gcs.game.engine.math.model20260618.Model20260618Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -41,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20260610_V1.0";
+    private static String simulation_version_info = "20260622_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -113,6 +114,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260530Engine) {
                                 RabbitSpinResult spinResult = new RabbitSpinResult();
                                 spinResult.cycleSpinForRabbit(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260618Engine) {
+                                KingFish2SpinResult spinResult = new KingFish2SpinResult();
+                                spinResult.cycleSpinForKingFish2(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {
