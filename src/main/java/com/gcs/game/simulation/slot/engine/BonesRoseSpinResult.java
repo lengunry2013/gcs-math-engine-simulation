@@ -36,7 +36,7 @@ import java.util.Map;
 public class BonesRoseSpinResult extends LittleDragonBunsSpinResult {
 
     public static final String FS_FILE = "fsResult1.txt";
-    public static final long[] BET_LEVEL = new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    public static final long[] BET_LEVEL = new long[]{2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
     private static BufferedWriter[] fsWriter = new BufferedWriter[3];
 
     public BonesRoseSpinResult() {
@@ -61,7 +61,7 @@ public class BonesRoseSpinResult extends LittleDragonBunsSpinResult {
             GameEngineCompute.initPayTableHit(model.getPayTable(), resultInfo);
             initFsSymbolInfo(model, resultInfo);
             MissSpookySpinResult.initJackpotMeter(model.getJackpotInitMeter(), resultInfo);
-            long minBet = 50 * model.minBetPerLine();
+            long minBet = model.minLines() * model.minBetPerLine();
             int[] initJackpotMeter = model.getJackpotInitMeter();
             boolean isWagerSaver = false;
             for (int i = 0; i < simulationCount; i++) {

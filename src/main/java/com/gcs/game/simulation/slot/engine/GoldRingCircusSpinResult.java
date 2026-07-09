@@ -66,7 +66,7 @@ public class GoldRingCircusSpinResult extends LittleDragonBunsSpinResult {
                 long winCredit = gameSessionBean.getSumWinCredit();
                 totalWon += winCredit;
                 GameEngineCompute.computePayTableHit(gameSessionBean, gameSessionBean.getSlotSpinResult(), resultInfo, getScatterSymbol());
-                long scEntryWin = computeScWin(resultInfo, spinResult, true);
+                int scCount = computeScWin(resultInfo, spinResult, true);
                 long linkBonusWin = computeSwInfo(resultInfo, spinResult, totalBet, true);
                 long baseWin = winCredit - linkBonusWin;
                 if (winCredit > resultInfo.getBaseGameTopAward()) {
@@ -124,6 +124,8 @@ public class GoldRingCircusSpinResult extends LittleDragonBunsSpinResult {
                                 resultInfo.setFreespinTotalWin(
                                         resultInfo.getFreespinTotalWin()
                                                 + fsCoinOut);
+                                resultInfo.getFsTimes()[scCount - 3] += fsTotalTimes;
+                                resultInfo.getFsWin()[scCount - 3] += fsCoinOut;
                             }
                         } else if (gameSessionBean.getGamePlayStatus() == GameConstant.SLOT_GAME_STATUS_COMPLETE) {
                             break;
@@ -202,7 +204,7 @@ public class GoldRingCircusSpinResult extends LittleDragonBunsSpinResult {
         return linkBonusWin;
     }
 
-    private long computeScWin(GoldRingCircusResultInfo resultInfo, Model20260701SpinResult spinResult, boolean isSlot) {
+    private int computeScWin(GoldRingCircusResultInfo resultInfo, Model20260701SpinResult spinResult, boolean isSlot) {
         int[] hitSymbols = spinResult.getHitSlotSymbols();
         int[] hitCounts = spinResult.getHitSlotSymbolCount();
         long[] hitPays = spinResult.getHitSlotPays();
@@ -217,7 +219,7 @@ public class GoldRingCircusSpinResult extends LittleDragonBunsSpinResult {
                         resultInfo.getFsScHit()[count - 3]++;
                         resultInfo.getFsScEntryWin()[count - 3] += hitPays[i];
                     }
-                    return hitPays[i];
+                    return count;
                 }
             }
         }
@@ -280,6 +282,12 @@ public class GoldRingCircusSpinResult extends LittleDragonBunsSpinResult {
                 strbHeader.append("Fs Sc").append(i + 3).append(" Entry Win").append(BaseConstant.TAB_STR);
             }
             strbHeader.append(StringUtil.getPayTableHeaderInfo(resultInfo));
+            for (int i = 0; i < resultInfo.getFsTimes().length; i++) {
+                strbHeader.append("Fs Sc").append(i + 3).append(" Times").append(BaseConstant.TAB_STR);
+            }
+            for (int i = 0; i < resultInfo.getFsWin().length; i++) {
+                strbHeader.append("Fs Sc").append(i + 3).append(" Win").append(BaseConstant.TAB_STR);
+            }
             FileWriteUtil.writeFileHeadInfo(configInfo.getOutputFileName(), strbHeader.toString());
         }
         StringBuilder strContent = new StringBuilder();
@@ -330,6 +338,12 @@ public class GoldRingCircusSpinResult extends LittleDragonBunsSpinResult {
             strContent.append(scWin).append(BaseConstant.TAB_STR);
         }
         strContent.append(StringUtil.getPayTableHit(resultInfo));
+        for (long fsTimes : resultInfo.getFsTimes()) {
+            strContent.append(fsTimes).append(BaseConstant.TAB_STR);
+        }
+        for (long fsWin : resultInfo.getFsWin()) {
+            strContent.append(fsWin).append(BaseConstant.TAB_STR);
+        }
         FileWriteUtil.outputPrint(strContent.toString(), configInfo.getOutputFileName(), configInfo, 0);
     }
 

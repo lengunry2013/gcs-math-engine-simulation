@@ -26,5 +26,7 @@ public class GoldRingCircusResultInfo extends BaseResultInfo {
     private long fsTriggerBonusWin = 0L;
     private long[] fsScHit = new long[3];
     private long[] fsScEntryWin = new long[3];
+    private long[] fsTimes = new long[3];
+    private long[] fsWin = new long[3];
 
 }
