@@ -14,6 +14,7 @@ import com.gcs.game.engine.math.model20260530.Model20260530Engine;
 import com.gcs.game.engine.math.model20260618.Model20260618Engine;
 import com.gcs.game.engine.math.model20260625.Model20260625Engine;
 import com.gcs.game.engine.math.model20260701.Model20260701Engine;
+import com.gcs.game.engine.math.model20260715.Model20260715Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -27,6 +28,7 @@ import com.gcs.game.exception.InvalidPlayerInputException;
 import com.gcs.game.simulation.blackJack.engine.BlackJackEngineResult;
 import com.gcs.game.simulation.blackJack.vo.BlackJackConfigInfo;
 import com.gcs.game.simulation.keno.engine.KenoEngineResult;
+import com.gcs.game.simulation.keno.engine.MakinBaconKenoSpinResult;
 import com.gcs.game.simulation.keno.vo.KenoConfigInfo;
 import com.gcs.game.simulation.poker.engine.PokerEngineResult;
 import com.gcs.game.simulation.poker.vo.PokerConfigInfo;
@@ -137,6 +139,11 @@ public class GameSimulator {
                             setKenoConfigWeight(configInfo, kenoModel);
                             KenoEngineResult kenoEngineResult = new KenoEngineResult();
                             kenoEngineResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
+                        } else if (engine instanceof Model20260715Engine) {
+                            BaseKenoModel kenoModel = GameModelFactoryTest.getInstance().getKenoModel(mmID);
+                            setKenoConfigWeight(configInfo, kenoModel);
+                            MakinBaconKenoSpinResult makinBaconKenoSpinResult = new MakinBaconKenoSpinResult();
+                            makinBaconKenoSpinResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
                         }
                     } else if (outputInfoType == BaseConstant.WIN_PAY_OUTPUT_TYPE) {
                         if ("Slots".equalsIgnoreCase(configInfo.getGameClass())) {

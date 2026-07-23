@@ -8,6 +8,7 @@ public class KenoConfigInfo extends BaseConfigInfo {
 
     private long lines = 1;
     private long bet = 1;
+    private boolean isRandomBet = false;
 
     private int[][] fsTimes = null;
     private int[][] fsWeight = null;
