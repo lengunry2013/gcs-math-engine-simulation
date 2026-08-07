@@ -15,6 +15,7 @@ import com.gcs.game.engine.math.model20260618.Model20260618Engine;
 import com.gcs.game.engine.math.model20260625.Model20260625Engine;
 import com.gcs.game.engine.math.model20260701.Model20260701Engine;
 import com.gcs.game.engine.math.model20260715.Model20260715Engine;
+import com.gcs.game.engine.math.model20260804.Model20260804Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -127,6 +128,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260701Engine) {
                                 GoldRingCircusSpinResult spinResult = new GoldRingCircusSpinResult();
                                 spinResult.cycleSpinForGoldRingCircus(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260804Engine) {
+                                WitchKitchenSpinResult spinResult = new WitchKitchenSpinResult();
+                                spinResult.cycleSpinForWitchKitchen(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {

@@ -275,6 +275,7 @@ public class InputConfigReader {
             configInfo = new KenoConfigInfo();
             long lines = getLongValue(LINES_KEY);
             long bet = getLongValue(BET_KEY);
+            boolean hasRandomBet = getIntValue(HAS_BET_RANDOM_KEY) == 1 ? true : false;
             long maxTotalPay = getLongValue(TOTAL_PAY_CAP_KEY);
             int[][] fsTimes = JSON.parseObject(getStringValue(FS_TIMES_KEY), int[][].class);
             int[][] fsWeight = JSON.parseObject(getStringValue(FS_WEIGHT_KEY), int[][].class);
@@ -286,6 +287,7 @@ public class InputConfigReader {
             int[] picks = JSON.parseObject(getStringValue(PICKS), int[].class);
             ((KenoConfigInfo) configInfo).setLines(lines);
             ((KenoConfigInfo) configInfo).setBet(bet);
+            ((KenoConfigInfo) configInfo).setRandomBet(hasRandomBet);
             ((KenoConfigInfo) configInfo).setTotalPayCap(maxTotalPay);
             ((KenoConfigInfo) configInfo).setFsTimes(fsTimes);
             ((KenoConfigInfo) configInfo).setFsWeight(fsWeight);
