@@ -17,6 +17,7 @@
         <reflections.version>0.10.2</reflections.version>
         <fastjson.version>1.2.70</fastjson.version>
         <lombok.version>1.18.20</lombok.version>
+        <hutool-5.version>5.8.35</hutool-5.version>
     </properties>
     <dependencies>
         <dependency>
@@ -44,6 +45,11 @@
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool-5.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,6 +59,8 @@
                 <includes>
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.yaml</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>

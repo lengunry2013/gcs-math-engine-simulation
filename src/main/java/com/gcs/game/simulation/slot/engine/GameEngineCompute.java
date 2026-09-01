@@ -52,7 +52,8 @@ public class GameEngineCompute {
                         if (spinResult instanceof Model1010802SpinResult) {
                             payWin = hitAmounts[i] / spinResult.getBaseGameMul();
                         } else if (gameLogicBean.getMmID().equalsIgnoreCase("20260201") ||
-                                gameLogicBean.getMmID().equalsIgnoreCase("20260625")) {
+                                gameLogicBean.getMmID().equalsIgnoreCase("20260625") ||
+                                gameLogicBean.getMmID().equalsIgnoreCase("20260825")) {
                             payWin = (hitAmounts[i] * 2) / gameLogicBean.getBet() / spinResult.getBaseGameMul();
                         }
                         /*if (spinResult instanceof Model8100802SpinResult) {

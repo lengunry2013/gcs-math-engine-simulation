@@ -16,6 +16,7 @@ import com.gcs.game.engine.math.model20260625.Model20260625Engine;
 import com.gcs.game.engine.math.model20260701.Model20260701Engine;
 import com.gcs.game.engine.math.model20260715.Model20260715Engine;
 import com.gcs.game.engine.math.model20260804.Model20260804Engine;
+import com.gcs.game.engine.math.model20260825.Model20260825Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -47,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20260622_V1.0";
+    private static String simulation_version_info = "20260827_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -131,6 +132,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260804Engine) {
                                 WitchKitchenSpinResult spinResult = new WitchKitchenSpinResult();
                                 spinResult.cycleSpinForWitchKitchen(engine, gameLogicBean, configInfo, slotModel);
+                            } else if (engine instanceof Model20260825Engine) {
+                                GoldenFortuneSpinResult spinResult = new GoldenFortuneSpinResult();
+                                spinResult.cycleSpinForGoldenFortune(engine, gameLogicBean, configInfo, slotModel);
                             }
                             //TODO
                         } else if (engine instanceof Model6080630Engine || engine instanceof Model6060630Engine) {
