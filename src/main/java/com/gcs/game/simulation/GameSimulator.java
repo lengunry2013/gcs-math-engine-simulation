@@ -17,6 +17,7 @@ import com.gcs.game.engine.math.model20260701.Model20260701Engine;
 import com.gcs.game.engine.math.model20260715.Model20260715Engine;
 import com.gcs.game.engine.math.model20260804.Model20260804Engine;
 import com.gcs.game.engine.math.model20260825.Model20260825Engine;
+import com.gcs.game.engine.math.model20260903.Model20260903Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -31,6 +32,7 @@ import com.gcs.game.simulation.blackJack.engine.BlackJackEngineResult;
 import com.gcs.game.simulation.blackJack.vo.BlackJackConfigInfo;
 import com.gcs.game.simulation.keno.engine.KenoEngineResult;
 import com.gcs.game.simulation.keno.engine.MakinBaconKenoSpinResult;
+import com.gcs.game.simulation.keno.engine.RabbitInTheHatKenoSpinResult;
 import com.gcs.game.simulation.keno.vo.KenoConfigInfo;
 import com.gcs.game.simulation.poker.engine.PokerEngineResult;
 import com.gcs.game.simulation.poker.vo.PokerConfigInfo;
@@ -48,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20260827_V1.0";
+    private static String simulation_version_info = "20260908_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -142,16 +144,19 @@ public class GameSimulator {
                             setPokerConfigWeight(configInfo, pokerModel);
                             PokerEngineResult pokerEngineResult = new PokerEngineResult();
                             pokerEngineResult.DealsResult(engine, gameLogicBean, configInfo, pokerModel);
-                        } else if (engine instanceof Model5070530Engine) {
+                        } else if ("TableGame_Keno".equalsIgnoreCase(configInfo.getGameClass())) {
                             BaseKenoModel kenoModel = GameModelFactoryTest.getInstance().getKenoModel(mmID);
                             setKenoConfigWeight(configInfo, kenoModel);
-                            KenoEngineResult kenoEngineResult = new KenoEngineResult();
-                            kenoEngineResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
-                        } else if (engine instanceof Model20260715Engine) {
-                            BaseKenoModel kenoModel = GameModelFactoryTest.getInstance().getKenoModel(mmID);
-                            setKenoConfigWeight(configInfo, kenoModel);
-                            MakinBaconKenoSpinResult makinBaconKenoSpinResult = new MakinBaconKenoSpinResult();
-                            makinBaconKenoSpinResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
+                            if (engine instanceof Model5070530Engine) {
+                                KenoEngineResult kenoEngineResult = new KenoEngineResult();
+                                kenoEngineResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
+                            } else if (engine instanceof Model20260715Engine) {
+                                MakinBaconKenoSpinResult makinBaconKenoSpinResult = new MakinBaconKenoSpinResult();
+                                makinBaconKenoSpinResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
+                            } else if (engine instanceof Model20260903Engine) {
+                                RabbitInTheHatKenoSpinResult rabbitKenoSpinResult = new RabbitInTheHatKenoSpinResult();
+                                rabbitKenoSpinResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
+                            }
                         }
                     } else if (outputInfoType == BaseConstant.WIN_PAY_OUTPUT_TYPE) {
                         if ("Slots".equalsIgnoreCase(configInfo.getGameClass())) {

@@ -2,10 +2,10 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>** converted by ez.utils **</comment>
-<entry key="reels_file">configuration/reels.model20260825.88.07.xml</entry>
-<entry key="xls_version">20260826_GOLDEN_FORTUNE_88%.xls|[SW,13]|[SC,12]|[S11,11]|[S10,10]|[S02,2]|[S04,4]|[S03,3]|[S06,6]|[W01,1]|[S05,5]|[S08,8]|[S07,7]|[S09,9]</entry>
+<entry key="reels_file">configuration/reels.model20260825.90.53.xml</entry>
+<entry key="xls_version">20260902_GOLDEN_FORTUNE_90%.xls|[SW,13]|[SC,12]|[S11,11]|[S10,10]|[S02,2]|[S04,4]|[S03,3]|[S06,6]|[W01,1]|[S05,5]|[S08,8]|[S07,7]|[S09,9]</entry>
 <entry key="xls_chk_str">Reel Strips,$C$4</entry>
-<entry key="frequency">88.07</entry>
+<entry key="frequency">90.53</entry>
 <entry key="modelIndex">20260825</entry>
 <entry key="reels_num">5</entry>
 <entry key="reels_initialize">1 2 3 4 5</entry>
