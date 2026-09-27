@@ -200,7 +200,7 @@ public class KenoEngineResult {
         }
     }
 
-    private List<Integer> getSelectNumbers(BaseKenoModel kenoModel, KenoConfigInfo kenoConfigInfo) {
+    protected List<Integer> getSelectNumbers(BaseKenoModel kenoModel, KenoConfigInfo kenoConfigInfo) {
         int[] selectCounts = kenoConfigInfo.getPicks();
         int countIndex = RandomUtil.getRandomInt(selectCounts.length);
         int count = selectCounts[countIndex];

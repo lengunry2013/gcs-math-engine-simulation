@@ -18,6 +18,7 @@ import com.gcs.game.engine.math.model20260715.Model20260715Engine;
 import com.gcs.game.engine.math.model20260804.Model20260804Engine;
 import com.gcs.game.engine.math.model20260825.Model20260825Engine;
 import com.gcs.game.engine.math.model20260903.Model20260903Engine;
+import com.gcs.game.engine.math.model20260923.Model20260923Engine;
 import com.gcs.game.engine.math.model5070530.Model5070530Engine;
 import com.gcs.game.engine.math.model6060630.Model6060630Engine;
 import com.gcs.game.engine.math.model6080630.Model6080630Engine;
@@ -30,6 +31,7 @@ import com.gcs.game.exception.InvalidGameStateException;
 import com.gcs.game.exception.InvalidPlayerInputException;
 import com.gcs.game.simulation.blackJack.engine.BlackJackEngineResult;
 import com.gcs.game.simulation.blackJack.vo.BlackJackConfigInfo;
+import com.gcs.game.simulation.keno.engine.BirdOfAKindKenoSpinResult;
 import com.gcs.game.simulation.keno.engine.KenoEngineResult;
 import com.gcs.game.simulation.keno.engine.MakinBaconKenoSpinResult;
 import com.gcs.game.simulation.keno.engine.RabbitInTheHatKenoSpinResult;
@@ -50,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GameSimulator {
-    private static String simulation_version_info = "20260908_V1.0";
+    private static String simulation_version_info = "20260927_V1.0";
 
     public static void main(String[] args) {
         if (args.length > 0) {
@@ -156,6 +158,9 @@ public class GameSimulator {
                             } else if (engine instanceof Model20260903Engine) {
                                 RabbitInTheHatKenoSpinResult rabbitKenoSpinResult = new RabbitInTheHatKenoSpinResult();
                                 rabbitKenoSpinResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
+                            } else if (engine instanceof Model20260923Engine) {
+                                BirdOfAKindKenoSpinResult birdKenoSpinResult = new BirdOfAKindKenoSpinResult();
+                                birdKenoSpinResult.spinResult(engine, gameLogicBean, configInfo, kenoModel);
                             }
                         }
                     } else if (outputInfoType == BaseConstant.WIN_PAY_OUTPUT_TYPE) {
